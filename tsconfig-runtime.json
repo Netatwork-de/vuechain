@@ -1,0 +1,12 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"target": "es6",
+		"module": "esnext",
+		"rootDir": "./src/runtime",
+		"outDir": "./runtime"
+	},
+	"include": [
+		"./src/runtime/**/*"
+	]
+}

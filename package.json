@@ -1,0 +1,21 @@
+{
+	"name": "vuechain",
+	"version": "1.0.0",
+	"description": "Vue 2 build tools for applications and libraries",
+	"publishConfig": {
+		"registry": "http://localhost:4873/"
+	},
+	"main": "./runtime/index.js",
+	"scripts": {
+		"compile:runtime": "tsc -p tsconfig-runtime.json",
+		"compile:tooling": "tsc -p tsconfig-tooling.json",
+		"compile": "concurrently npm:compile:runtime npm:compile:tooling"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"concurrently": "^5.0.0",
+		"typescript": "^3.6.4"
+	},
+	"author": "Net at Work GmbH",
+	"license": "Apache-2.0"
+}
