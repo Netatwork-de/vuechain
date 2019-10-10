@@ -1,20 +1,44 @@
 {
 	"name": "vuechain",
 	"version": "1.0.0",
-	"description": "Vue 2 build tools for applications and libraries",
+	"description": "An opinionated full stack build chain for large scale vue 2 projects",
 	"publishConfig": {
 		"registry": "http://localhost:4873/"
 	},
 	"main": "./runtime/index.js",
+	"bin": "./tooling/index.js",
 	"scripts": {
 		"compile:runtime": "tsc -p tsconfig-runtime.json",
+		"compile:runtime:watch": "tsc -p tsconfig-runtime.json -w",
 		"compile:tooling": "tsc -p tsconfig-tooling.json",
-		"compile": "concurrently npm:compile:runtime npm:compile:tooling"
+		"compile:tooling:watch": "tsc -p tsconfig-tooling.json -w",
+		"compile": "concurrently npm:compile:runtime npm:compile:tooling",
+		"compile:watch": "concurrently npm:compile:runtime:watch npm:compile:tooling:watch",
+		"clean": "rimraf ./runtime/**/* ./tooling/**/*",
+		"prepack": "npm run clean && npm run compile"
 	},
-	"dependencies": {},
+	"dependencies": {
+		"@phylum/command": "^1.2.0",
+		"ansi-colors": "^4.1.1",
+		"css-loader": "^3.2.0",
+		"fs-extra": "^8.1.0",
+		"html-webpack-plugin": "^3.2.0",
+		"sass": "^1.23.0",
+		"sass-loader": "^8.0.0",
+		"ts-loader": "^6.2.0",
+		"typescript": "^3.6.4",
+		"vue": "^2.6.10",
+		"vue-loader": "^15.7.1",
+		"vue-style-loader": "^4.1.2",
+		"vue-template-compiler": "^2.6.10",
+		"webpack": "^4.41.0",
+		"webpack-dev-server": "^3.8.2"
+	},
 	"devDependencies": {
+		"@types/fs-extra": "^8.0.0",
+		"@types/node": "^10.14.21",
 		"concurrently": "^5.0.0",
-		"typescript": "^3.6.4"
+		"rimraf": "^3.0.0"
 	},
 	"author": "Net at Work GmbH",
 	"license": "Apache-2.0"

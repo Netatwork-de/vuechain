@@ -2,6 +2,13 @@
 	"compilerOptions": {
 		"target": "es6",
 		"module": "commonjs",
-		"moduleResolution": "node"
-	}
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"declaration": true,
+		"sourceMap": true
+	},
+	"exclude": [
+		"./runtime",
+		"./tooling"
+	]
 }
