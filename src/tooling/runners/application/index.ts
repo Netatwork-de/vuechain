@@ -35,7 +35,11 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 				minify: {
 					collapseWhitespace: context.env === "production"
 				}
-			})
+			}),
+
+			...(context.watch ? [] : [
+				new webpack.ProgressPlugin()
+			]),
 		],
 		node: false,
 		output: {
@@ -54,7 +58,19 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 			publicPath: "/"
 		});
 		server.listen(8080);
+		await new Promise(() => { });
 	} else {
-		// TODO: Run webpack normally.
+		await new Promise((resolve, reject) => {
+			compiler.run((error, stats) => {
+				if (error) {
+					reject(error);
+				} else {
+					console.log(stats.toString({
+						colors: process.stdout.isTTY
+					}));
+					resolve();
+				}
+			});
+		});
 	}
 }
