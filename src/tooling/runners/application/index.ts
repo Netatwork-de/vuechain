@@ -8,7 +8,7 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 	const webpackConfig = {
 		context: config.context,
 		mode: context.env === "development" ? "development" : "production",
-		devtool: context.env === "production" ? null : "inline-source-map",
+		devtool: context.env === "production" ? false : "inline-source-map",
 		entry: "./src",
 		resolve: {
 			extensions: [".ts", ".js", ".json"],

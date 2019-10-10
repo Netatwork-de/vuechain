@@ -1,4 +1,5 @@
 import { VcConfig } from "../config";
+import { ArgumentSpec, CommandError, formatUsage } from "@phylum/command";
 
 export interface VcRunnerContext {
 	readonly watch: boolean;
@@ -6,6 +7,16 @@ export interface VcRunnerContext {
 }
 
 export type VcRunnerEnv = "development" | "production" | "testing";
+export const VC_RUNNER_ENVS = new Set<VcRunnerEnv>(["development", "production", "testing"]);
+export const VC_RUNNER_ENVS_STR = Array.from(VC_RUNNER_ENVS).map(t => `"${t}"`).join(", ");
+export const VC_RUNNER_ENV_ARG = Object.assign((value: string, spec: ArgumentSpec) => {
+	if (!VC_RUNNER_ENVS.has(<any> value)) {
+		throw new CommandError(`Usage: ${formatUsage(spec)}`);
+	}
+	return value as VcRunnerEnv;
+}, {
+	displayName: VC_RUNNER_ENVS_STR
+});
 
 export async function run(config: VcConfig, options: VcRunnerContext) {
 	// Package type specific runners are loaded on demand to

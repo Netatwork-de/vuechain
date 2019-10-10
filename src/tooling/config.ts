@@ -9,8 +9,8 @@ export interface VcConfig {
 }
 
 export type VcPackageType = "application" | "library";
-const VC_PACKAGE_TYPES = new Set<VcPackageType>(["application", "library"]);
-const VC_PACKAGE_TYPES_STR = Array.from(VC_PACKAGE_TYPES).map(t => `"${t}"`).join(", ");
+export const VC_PACKAGE_TYPES = new Set<VcPackageType>(["application", "library"]);
+export const VC_PACKAGE_TYPES_STR = Array.from(VC_PACKAGE_TYPES).map(t => `"${t}"`).join(", ");
 
 export class ConfigError extends TypeError {
 	constructor(public readonly filename: string, message: string) {

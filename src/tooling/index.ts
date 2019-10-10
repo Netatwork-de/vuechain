@@ -5,7 +5,7 @@ import { CommandSpec, CommandError } from "@phylum/command";
 import { inspect } from "util";
 import { ConfigError, loadConfig } from "./config";
 import { resolve } from "path";
-import { run } from "./runners";
+import { run, VcRunnerEnv, VC_RUNNER_ENV_ARG } from "./runners";
 
 ;(async () => {
 	const argv = process.argv.slice(2);
@@ -15,12 +15,13 @@ import { run } from "./runners";
 		case "build":
 			const args = new CommandSpec([
 				{ name: "config", alias: "c", defaultValue: "vuechain.json" },
-				{ name: "env", alias: "e", defaultValue: "development" }
+				{ name: "env", alias: "e", type: VC_RUNNER_ENV_ARG }
 			]).parse(argv);
 			const config = await loadConfig(resolve(args.config));
+			const env: VcRunnerEnv = args.env || (command === "start" ? "development" : "production");
 			await run(config, {
 				watch: command === "start",
-				env: "development"
+				env
 			});
 			break;
 
