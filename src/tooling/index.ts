@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import "v8-compile-cache";
+
 import { CommandSpec, CommandError } from "@phylum/command";
 import { inspect } from "util";
 import { ConfigError, loadConfig } from "./config";

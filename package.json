@@ -27,6 +27,7 @@
 		"sass-loader": "^8.0.0",
 		"ts-loader": "^6.2.0",
 		"typescript": "^3.6.4",
+		"v8-compile-cache": "^2.1.0",
 		"vue": "^2.6.10",
 		"vue-loader": "^15.7.1",
 		"vue-style-loader": "^4.1.2",
