@@ -12,6 +12,8 @@ const ready = new Promise(resolve => {
 export interface BootstrapOptions {
 	/** Your application's entry component. */
 	app: VueConstructor<any>;
+	/** The selector to mount the app when ready. Default is `"#app"` */
+	mount?: string;
 }
 
 /** Start a vuechain app. */
@@ -21,5 +23,5 @@ export async function bootstrap(options: BootstrapOptions) {
 	});
 
 	await ready;
-	app.$mount("#app");
+	app.$mount(options.mount || "#app");
 }
