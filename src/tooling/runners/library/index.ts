@@ -41,9 +41,9 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 		});
 
 		if (errorCount > 0) {
-			console.log(colors.redBright(`\n${new Date().toLocaleTimeString()} Compilation finished with ${errorCount} error(s).`));
+			console.log(colors.redBright(`\n[${new Date().toLocaleTimeString()}] Compilation finished with ${errorCount} error(s).`));
 		} else {
-			console.log(colors.greenBright(`\n${new Date().toLocaleTimeString()} Compilation succeeded.`));
+			console.log(colors.greenBright(`\n[${new Date().toLocaleTimeString()}] Compilation succeeded.`));
 		}
 		if (context.watch) {
 			console.log(colors.gray("Watching for changes..."));
