@@ -47,7 +47,7 @@ export function streamEnd(streams: (NodeJS.ReadableStream | NodeJS.WritableStrea
 				callback();
 			}
 		}
-		stream.on("end", end).on("close", end);
+		stream.on("end", end);
 	});
 }
 
