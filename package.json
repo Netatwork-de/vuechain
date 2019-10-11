@@ -43,6 +43,7 @@
 	},
 	"devDependencies": {
 		"@types/fs-extra": "^8.0.0",
+		"@types/gulp-sourcemaps": "0.0.32",
 		"@types/merge-stream": "^1.1.2",
 		"@types/node": "^10.14.21",
 		"@types/vinyl-fs": "^2.4.11",

@@ -1,5 +1,5 @@
 import { DiagnosticCategory } from "typescript";
-import ts = require("gulp-typescript");
+import gulpTs = require("gulp-typescript");
 import colors = require("ansi-colors");
 
 // The following logging behavior is the same as in ts-loader (see npm) to
@@ -10,7 +10,7 @@ const categories = new Map<DiagnosticCategory, { style: colors.StyleFunction, la
 	[DiagnosticCategory.Warning, { style: colors.yellow, label: "WARNING" }]
 ]);
 
-export function formatTsError(error: ts.reporter.TypeScriptError) {
+export function formatTsError(error: gulpTs.reporter.TypeScriptError) {
 	const category = categories.get(error.diagnostic.category);
 	if (category) {
 		return category.style(`[ts] ${category.label} in ${colors.cyanBright(`${error.fullFilename}${error.startPosition ? `(${formatPosition(error.startPosition)})` : ""}`)}\n     TS${error.diagnostic.code}: ${error.diagnostic.messageText}`);
