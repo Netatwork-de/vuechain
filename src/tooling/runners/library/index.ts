@@ -7,35 +7,48 @@ import { VcConfig } from "../../config";
 import { VcRunnerContext } from "..";
 import { join } from "path";
 import { formatTsError } from "./ts-util";
-import { Task, stream } from "./tasks";
+import { Task, stream, streamSwitch, streamEnd } from "./tasks";
 
 export async function run(config: VcConfig, context: VcRunnerContext) {
 	const tsProject = gulpTs.createProject(join(config.context, "tsconfig.json"));
 	const scheduler = new Task(async () => {
 		let errorCount = 0;
-		const tsProcessor = tsProject({
-			error(error) {
-				errorCount++;
-				console.error(formatTsError(error));
-			}
-		});
-
-		const outDir = dest(config.outDir);
 		await stream((end, error) => {
-			src("./**/*.ts", { cwd: config.rootDir, allowEmpty: true, nosort: true })
-				.pipe(sourcemaps.init())
-				.pipe(tsProcessor.on("error", error).on("end", end))
+			const tsProcessor = tsProject({
+				error(error) {
+					errorCount++;
+					console.error("\n" + formatTsError(error));
+				}
+			}).on("error", () => { });
+
+			const sources = src("./**/*", { cwd: config.rootDir, allowEmpty: true, nosort: true })
+				.pipe(sourcemaps.init());
+
+			const output = dest(config.outDir);
+
+			sources.pipe(streamSwitch([
+				{ match: /\.ts$/, stream: tsProcessor },
+				{ stream: output }
+			]));
+
+			tsProcessor
 				.pipe(sourcemaps.write())
-				.pipe(dest(config.outDir), { end: false })
+				.pipe(output);
+
+			streamEnd([sources], () => tsProcessor.end());
+			streamEnd([tsProcessor], () => output.end());
+			streamEnd([output], end);
 		});
 
-		await stream((end, error) => {
-			outDir.on("error", error).on("end", end).on("close", end).end();
-		});
-
-		console.log(`Compilation finished with ${errorCount} error(s).`);
+		if (errorCount > 0) {
+			console.log(colors.redBright(`\n${new Date().toLocaleTimeString()} Compilation finished with ${errorCount} error(s).`));
+		} else {
+			console.log(colors.greenBright(`\n${new Date().toLocaleTimeString()} Compilation succeeded.`));
+		}
 		if (context.watch) {
 			console.log(colors.gray("Watching for changes..."));
+		} else if (errorCount > 0) {
+			throw new Error("Build failed due to compilation errors.");
 		}
 	});
 
