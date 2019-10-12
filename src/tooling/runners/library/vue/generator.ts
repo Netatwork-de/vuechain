@@ -21,11 +21,17 @@ export const componentEntry = ({
 	readonly scoped: boolean;
 	readonly scopeId: string;
 }) => `
+import { compose } from "vuechain/compose";
 ${hasTemplate ? `import { render, staticRenderFns } from "./${stem}--r.js";\n` : ""}
 ${hasScript ? `import component from "./${stem}--s.js";\n` : ""}
 ${Array.from(new Array(hasStyles)).map((_, i) => `import "./${stem}--s${i}.css";\n`).join("")}
-// TODO: Compose & export component.
-${scoped ? `// TODO: Inject scope id: ${scopeId}` : ""}
+
+export default compose(
+	/* render */ ${hasTemplate ? "render" : "null"},
+	/* staticRenderFns */ ${hasTemplate ? "staticRenderFns" : "null"},
+	/* component */ ${hasScript ? "component" : "null"},
+	/* scopeId */ ${scoped ? JSON.stringify(scopeId) : null}
+);
 `;
 
 export const componentDeclaration = ({
