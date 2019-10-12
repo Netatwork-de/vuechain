@@ -7,6 +7,7 @@
 	},
 	"main": "./runtime/index.js",
 	"bin": "./tooling/index.js",
+	"types": "./runtime/index.d.ts",
 	"scripts": {
 		"compile:runtime": "tsc -p tsconfig-runtime.json",
 		"compile:runtime:watch": "tsc -p tsconfig-runtime.json -w",
