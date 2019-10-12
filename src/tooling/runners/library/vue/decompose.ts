@@ -2,11 +2,10 @@ import { dirname, basename } from "path";
 import hash = require("hash-sum");
 import { Transform } from "stream";
 import Vinyl = require("vinyl");
-import colors = require("ansi-colors");
 import { getSource } from "../utility/vinyl";
 import { VueTemplateCompiler } from "@vue/component-compiler-utils/dist/types";
-import { ErrorWithRange } from "vue-template-compiler";
 import { componentEntry, templateModule } from "./generator";
+import { VueError } from "./error";
 
 export interface VueDecomposeOptions {
 	error(error: VueError): void;
@@ -20,7 +19,7 @@ export interface VueDecomposeOptions {
  * Before writing the final files to disk, they should be piped through
  * a composeVue transform to apply some final transformations.
  */
-export function decomposeVue(options: VueDecomposeOptions) {
+export function createDecomposer(options: VueDecomposeOptions) {
 	return new Transform({
 		objectMode: true,
 		async transform(chunk: Vinyl, encoding, callback) {
@@ -112,14 +111,4 @@ async function decompose(this: Transform, chunk: Vinyl) {
 		// the component without declarations for ".vue" files installed:
 		path: `${name}.vue.js`
 	}));
-}
-
-export class VueError extends Error {
-	public constructor(filename: string, errors: (string | ErrorWithRange)[]) {
-		super();
-	}
-}
-
-export function formatVueError(error: VueError) {
-	return colors.redBright(`[vue] ERROR`);
 }
