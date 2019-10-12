@@ -9,19 +9,23 @@
 export const componentEntry = ({
 	stem,
 	hasTemplate,
-	hasScript
+	hasScript,
+	hasStyles,
+	scoped,
+	scopeId
 }: {
 	readonly stem: string;
 	readonly hasTemplate: boolean;
 	readonly hasScript: boolean;
-}) => `${hasTemplate
-	? `import { render, staticRenderFns } from "./${stem}--r.js";\n`
-	: ""
-}${hasScript
-	? `import component from "./${stem}--s.js";\n`
-	: ""
-}
+	readonly hasStyles: number;
+	readonly scoped: boolean;
+	readonly scopeId: string;
+}) => `
+${hasTemplate ? `import { render, staticRenderFns } from "./${stem}--r.js";\n` : ""}
+${hasScript ? `import component from "./${stem}--s.js";\n` : ""}
+${Array.from(new Array(hasStyles)).map((_, i) => `import "./${stem}--s${i}.css";\n`).join("")}
 // TODO: Compose & export component.
+${scoped ? `// TODO: Inject scope id: ${scopeId}` : ""}
 `;
 
 export const componentDeclaration = ({
@@ -30,9 +34,11 @@ export const componentDeclaration = ({
 }: {
 	readonly stem: string;
 	readonly hasDeclaration: boolean;
-}) => `${hasDeclaration
+}) => `
+${hasDeclaration
 	? `export * from "./${stem}--s";`
-	: ""}`;
+	: `import Vue from "vue";\ndeclare const _default: import("vue").VueConstructor<Vue>;\nexport default _default;`
+}`;
 
 /**
  * Generate template module code that exports compiled render functions.

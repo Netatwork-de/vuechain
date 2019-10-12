@@ -2,16 +2,18 @@ import { join } from "path";
 import { src, dest } from "vinyl-fs";
 import chokidar = require("chokidar");
 import gulpTs = require("gulp-typescript");
+import gulpSass = require("gulp-sass");
 import sourcemaps = require("gulp-sourcemaps");
 import colors = require("ansi-colors");
 import { VcConfig } from "../../config";
 import { VcRunnerContext } from "..";
 import { formatTsError } from "./utility/ts";
 import { Task } from "./utility/task";
-import { createDecomposer } from "./vue/decompose";
+import { createVueDecomposer } from "./vue/decompose";
 import { formatVueError } from "./vue/error";
-import { createComposer } from "./vue/compose";
+import { createPostprocessor } from "./postprocess";
 import { Pipes } from "./utility/pipes";
+import { formatSassError } from "./sass/error";
 
 export async function run(config: VcConfig, context: VcRunnerContext) {
 	const tsProject = gulpTs.createProject(join(config.context, "tsconfig.json"));
@@ -29,18 +31,23 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 				}
 			}
 		});
-		const decomposer = createDecomposer({
+		const scss = gulpSass({
+		}).on("error", (error: any) => {
+			errorCount++;
+			console.error("\n" + formatSassError(error));
+		});
+		const vueDecomposer = createVueDecomposer({
 			error(error) {
 				errorCount++;
 				console.error("\n" + formatVueError(error));
 			}
 		});
-		const composer = createComposer({
+		const postprocessor = createPostprocessor({
 			error(error) {
 				errorCount++;
 				console.error("\n" + formatVueError(error));
 			},
-			decomposer
+			vueDecomposer: vueDecomposer
 		});
 		const writeSourcemaps = sourcemaps.write();
 		const output = dest(config.outDir);
@@ -49,19 +56,19 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 			.pipe(input, initSourcemaps)
 			.route(initSourcemaps, [
 				{ map: /\.ts$/, to: ts },
-				// { map: /\.scss$/, to: scss },
-				{ map: /\.vue$/, to: decomposer.stream },
-				{ to: output }
+				{ map: /\.scss$/, to: scss },
+				{ map: /\.vue$/, to: vueDecomposer.stream },
+				{ to: postprocessor }
 			])
-			.route(decomposer.stream, [
-				{ map: /\.d.ts$/, to: composer },
+			.route(vueDecomposer.stream, [
+				{ map: /\.d.ts$/, to: postprocessor },
 				{ map: /\.ts$/, to: ts },
-				// { map: /\.scss$/, to: scss },
-				{ to: composer }
+				{ map: /\.scss$/, to: scss },
+				{ to: postprocessor }
 			])
-			.pipe(ts, composer)
-			// .pipe(scss, composer)
-			.pipe(composer, writeSourcemaps)
+			.pipe(ts, postprocessor)
+			.pipe(scss, postprocessor)
+			.pipe(postprocessor, writeSourcemaps)
 			.pipe(writeSourcemaps, output)
 			.run()
 			.catch(error => {

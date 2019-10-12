@@ -12,6 +12,8 @@ export interface VueDecomposeOptions {
 }
 
 export interface VueComponentMeta {
+	readonly scopeId: string;
+	readonly scopedStyles: Set<number>;
 }
 
 export interface VueDecomposer {
@@ -27,7 +29,7 @@ export interface VueDecomposer {
  * Before writing the final files to disk, they should be piped through
  * a composeVue transform to apply some final transformations.
  */
-export function createDecomposer(options: VueDecomposeOptions): VueDecomposer {
+export function createVueDecomposer(options: VueDecomposeOptions): VueDecomposer {
 	const components = new Map<string, VueComponentMeta>();
 	return {
 		stream: new Transform({
@@ -102,7 +104,7 @@ async function decompose(this: Transform, chunk: Vinyl, components: Map<string, 
 	let hasScript = false;
 	let hasDeclaration = false;
 	if (script) {
-		if (script.attrs.lang !== "ts") {
+		if (script.lang !== "ts") {
 			throw new VueError(chunk.path, [`Non typescript script blocks are currently unsupported in vue components. Use <script lang="ts">`]);
 		}
 		const scriptFile = new Vinyl({
@@ -117,8 +119,26 @@ async function decompose(this: Transform, chunk: Vinyl, components: Map<string, 
 		hasDeclaration = true;
 	}
 
+	let hasStyles = 0;
+	const scopedStyles = new Set<number>();
+	for (let i = 0; i < styles.length; i++) {
+		const style = styles[i];
+		const styleFile = new Vinyl({
+			contents: Buffer.from(style.content),
+			cwd: chunk.cwd,
+			base: chunk.base,
+			path: `${name}--s${i}.${style.lang || "css"}`
+		});
+		if (style.scoped) {
+			scopedStyles.add(i);
+		}
+		// TODO: Attach source maps.
+		files.push(styleFile);
+		hasStyles++;
+	}
+
 	files.push(new Vinyl({
-		contents: Buffer.from(componentEntry({ stem: chunk.stem, hasTemplate, hasScript })),
+		contents: Buffer.from(componentEntry({ stem: chunk.stem, hasTemplate, hasScript, hasStyles, scoped, scopeId })),
 		cwd: chunk.cwd,
 		base: chunk.base,
 		// The additional vue extension is used to allow imports of
@@ -132,7 +152,10 @@ async function decompose(this: Transform, chunk: Vinyl, components: Map<string, 
 		path: `${name}.vue.d.ts`
 	}));
 
-	components.set(chunk.relative.slice(0, -chunk.extname.length), { });
+	components.set(chunk.relative.slice(0, -chunk.extname.length), {
+		scopeId,
+		scopedStyles
+	});
 
 	for (const file of files) {
 		this.push(file);
