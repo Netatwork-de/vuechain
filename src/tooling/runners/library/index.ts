@@ -39,7 +39,8 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 			error(error) {
 				errorCount++;
 				console.error("\n" + formatVueError(error));
-			}
+			},
+			decomposer
 		});
 		const writeSourcemaps = sourcemaps.write();
 		const output = dest(config.outDir);
@@ -49,10 +50,11 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 			.route(initSourcemaps, [
 				{ map: /\.ts$/, to: ts },
 				// { map: /\.scss$/, to: scss },
-				{ map: /\.vue$/, to: decomposer },
+				{ map: /\.vue$/, to: decomposer.stream },
 				{ to: output }
 			])
-			.route(decomposer, [
+			.route(decomposer.stream, [
+				{ map: /\.d.ts$/, to: composer },
 				{ map: /\.ts$/, to: ts },
 				// { map: /\.scss$/, to: scss },
 				{ to: composer }

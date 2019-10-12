@@ -2,7 +2,7 @@
 /**
  * Generate entry module code that imports decomposed parts of a
  * vue component and exports a normalized vue component as default.
- * 
+ *
  * (Named exports from the component script are currently not supported, which
  * will pass through typescript silently, but break during the webpack build)
  */
@@ -23,6 +23,16 @@ export const componentEntry = ({
 }
 // TODO: Compose & export component.
 `;
+
+export const componentDeclaration = ({
+	stem,
+	hasDeclaration
+}: {
+	readonly stem: string;
+	readonly hasDeclaration: boolean;
+}) => `${hasDeclaration
+	? `export * from "./${stem}--s";`
+	: ""}`;
 
 /**
  * Generate template module code that exports compiled render functions.

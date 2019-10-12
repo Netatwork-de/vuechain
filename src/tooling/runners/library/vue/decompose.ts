@@ -4,11 +4,19 @@ import { Transform } from "stream";
 import Vinyl = require("vinyl");
 import { getSource } from "../utility/vinyl";
 import { VueTemplateCompiler } from "@vue/component-compiler-utils/dist/types";
-import { componentEntry, templateModule } from "./generator";
+import { componentEntry, templateModule, componentDeclaration } from "./generator";
 import { VueError } from "./error";
 
 export interface VueDecomposeOptions {
 	error(error: VueError): void;
+}
+
+export interface VueComponentMeta {
+}
+
+export interface VueDecomposer {
+	readonly stream: Transform;
+	readonly components: Map<string, VueComponentMeta>;
 }
 
 /**
@@ -19,26 +27,30 @@ export interface VueDecomposeOptions {
  * Before writing the final files to disk, they should be piped through
  * a composeVue transform to apply some final transformations.
  */
-export function createDecomposer(options: VueDecomposeOptions) {
-	return new Transform({
-		objectMode: true,
-		async transform(chunk: Vinyl, encoding, callback) {
-			try {
-				await decompose.call(this, chunk);
-				callback();
-			} catch (error) {
-				if (error instanceof VueError) {
-					options.error(error);
+export function createDecomposer(options: VueDecomposeOptions): VueDecomposer {
+	const components = new Map<string, VueComponentMeta>();
+	return {
+		stream: new Transform({
+			objectMode: true,
+			async transform(chunk: Vinyl, encoding, callback) {
+				try {
+					await decompose.call(this, chunk, components);
 					callback();
-				} else {
-					callback(error);
+				} catch (error) {
+					if (error instanceof VueError) {
+						options.error(error);
+						callback();
+					} else {
+						callback(error);
+					}
 				}
 			}
-		}
-	});
+		}),
+		components
+	};
 }
 
-async function decompose(this: Transform, chunk: Vinyl) {
+async function decompose(this: Transform, chunk: Vinyl, components: Map<string, VueComponentMeta>) {
 	const name = chunk.path.slice(0, -chunk.extname.length);
 	const source = getSource(chunk);
 
@@ -56,6 +68,8 @@ async function decompose(this: Transform, chunk: Vinyl) {
 		sourceRoot: dirname(chunk.path),
 		needMap: true
 	});
+
+	const files: Vinyl[] = [];
 
 	const scopeId = `data-v-${hash(`${chunk.relative}:${source}`)}`;
 	const scoped = styles.some(s => s.scoped);
@@ -76,7 +90,7 @@ async function decompose(this: Transform, chunk: Vinyl) {
 		if (errors.length > 0) {
 			throw new VueError(chunk.path, errors);
 		}
-		this.push(new Vinyl({
+		files.push(new Vinyl({
 			contents: Buffer.from(templateModule({ code })),
 			cwd: chunk.cwd,
 			base: chunk.base,
@@ -86,6 +100,7 @@ async function decompose(this: Transform, chunk: Vinyl) {
 	}
 
 	let hasScript = false;
+	let hasDeclaration = false;
 	if (script) {
 		if (script.attrs.lang !== "ts") {
 			throw new VueError(chunk.path, [`Non typescript script blocks are currently unsupported in vue components. Use <script lang="ts">`]);
@@ -97,13 +112,12 @@ async function decompose(this: Transform, chunk: Vinyl) {
 			path: `${name}--s.ts`
 		});
 		// TODO: Attach source maps.
-		this.push(scriptFile);
+		files.push(scriptFile);
 		hasScript = true;
-	} else {
-		// TODO: Emit dummy declaration file.
+		hasDeclaration = true;
 	}
 
-	this.push(new Vinyl({
+	files.push(new Vinyl({
 		contents: Buffer.from(componentEntry({ stem: chunk.stem, hasTemplate, hasScript })),
 		cwd: chunk.cwd,
 		base: chunk.base,
@@ -111,4 +125,16 @@ async function decompose(this: Transform, chunk: Vinyl) {
 		// the component without declarations for ".vue" files installed:
 		path: `${name}.vue.js`
 	}));
+	files.push(new Vinyl({
+		contents: Buffer.from(componentDeclaration({ stem: chunk.stem, hasDeclaration })),
+		cwd: chunk.cwd,
+		base: chunk.base,
+		path: `${name}.vue.d.ts`
+	}));
+
+	components.set(chunk.relative.slice(0, -chunk.extname.length), { });
+
+	for (const file of files) {
+		this.push(file);
+	}
 }

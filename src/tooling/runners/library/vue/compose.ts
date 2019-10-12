@@ -1,9 +1,11 @@
 import { Transform } from "stream";
 import Vinyl = require("vinyl");
 import { VueError } from "./error";
+import { VueDecomposer } from "./decompose";
 
 export interface VueComposeOptions {
 	error(error: VueError): void;
+	readonly decomposer: VueDecomposer;
 }
 
 export function createComposer(options: VueComposeOptions) {
@@ -11,7 +13,7 @@ export function createComposer(options: VueComposeOptions) {
 		objectMode: true,
 		async transform(chunk: Vinyl, encoding, callback) {
 			try {
-				await compose.call(this, chunk);
+				await compose.call(this, chunk, options.decomposer);
 				callback();
 			} catch (error) {
 				if (error instanceof VueError) {
@@ -25,9 +27,7 @@ export function createComposer(options: VueComposeOptions) {
 	});
 }
 
-export function compose(this: Transform, chunk: Vinyl) {
-	// TODO: Check if there is a matching .vue component file by reading some map from the decomposer.
+export function compose(this: Transform, chunk: Vinyl, decomposer: VueDecomposer) {
 	// TODO: Apply scope transforms to css.
-	// TODO: Replace "--s.d.ts" with ".vue.d.ts".
 	this.push(chunk);
 }
