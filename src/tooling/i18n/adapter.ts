@@ -1,6 +1,7 @@
 import { I18nFileMeta } from "./file-meta";
 import { VcConfig } from "../config";
 import { I18nPackageManifest } from "./package-manifest";
+import { VcRunnerContext } from "../runners";
 
 export interface I18nPair {
 	/** The full i18n key. */
@@ -17,9 +18,16 @@ export interface I18nFile {
 }
 
 export interface I18nAdapterContext {
+	readonly config: VcConfig;
+	readonly runner: VcRunnerContext;
+
 	/** A map of source filenames to i18n related file information. */
 	readonly files: ReadonlyMap<string, I18nFile>;
 
 	getPackageConfig(context: string): Promise<VcConfig | undefined>;
 	getPackageManifest(config: VcConfig): Promise<I18nPackageManifest | undefined>;
+}
+
+export interface I18nAdapter {
+	process(context: I18nAdapterContext): Promise<void> | void;
 }

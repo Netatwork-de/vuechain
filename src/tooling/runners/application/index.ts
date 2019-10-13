@@ -49,7 +49,7 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 			]
 		},
 		plugins: [
-			new I18nPlugin(),
+			new I18nPlugin(config, context),
 			new VueLoaderPlugin(),
 			new HtmlPlugin({
 				template: "./src/index.html",

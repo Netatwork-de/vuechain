@@ -4,12 +4,12 @@ import Vue from "vue";
 export function compose(
 	render: any,
 	staticRenderFns: any,
-	component: any,
+	script: any,
 	scopeId: any
 ) {
-	const options = component === null
+	const options = script === null
 		? { render: null }
-		: (typeof component === "function" ? component.options : component);
+		: (typeof script === "function" ? script.options : script);
 
 	options.render = render || ((c: any) => c("div"));
 	options.staticRenderFns = staticRenderFns;

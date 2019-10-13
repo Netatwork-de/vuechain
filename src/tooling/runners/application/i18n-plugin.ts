@@ -1,24 +1,27 @@
-import { I18nPackageManifest, getPackageManifest } from "../../i18n/package-manifest";
-import { I18N_MODULE_META_KEY, I18N_PLUGIN_KEY, I18N_MODULE_CONFIG_KEY } from "./common";
-import { I18nFileMeta } from "../../i18n/file-meta";
 import { readFile, writeFile } from "fs-extra";
+import { I18nPackageManifest, getPackageManifest } from "../../i18n/package-manifest";
+import { I18nFileMeta } from "../../i18n/file-meta";
 import { parseSource } from "../../i18n/parse-source";
 import { VcConfig, loadConfigFromContext } from "../../config";
 import { justifySource } from "../../i18n/justify-source";
 import { I18nPair, I18nFile, I18nAdapterContext } from "../../i18n/adapter";
+import { VcRunnerContext } from "..";
+import { I18N_MODULE_META_KEY, I18N_PLUGIN_KEY, I18N_MODULE_CONFIG_KEY } from "./common";
 
 const NAME = "vuechain i18n plugin";
 
 export class I18nPlugin implements I18nAdapterContext {
+	public constructor(
+		public readonly config: VcConfig,
+		public readonly runner: VcRunnerContext
+	) { }
+
 	private _packageConfigRequests = new Map<string, Promise<VcConfig | undefined>>();
 	private _packageManifestRequests = new Map<string, Promise<I18nPackageManifest | undefined>>();
 	private _sourceRequests = new Map<string, Promise<string>>();
 	private _processingModules = new Map<string, Promise<void>>();
-	private _files = new Map<string, I18nFile>();
 
-	public get files(): ReadonlyMap<string, I18nFile> {
-		return this._files;
-	}
+	public readonly files = new Map<string, I18nFile>();
 
 	/** @internal */
 	public apply(compiler: any) {
@@ -30,7 +33,7 @@ export class I18nPlugin implements I18nAdapterContext {
 				this._packageManifestRequests.clear();
 				this._sourceRequests.clear();
 				this._processingModules.clear();
-				this._files.clear();
+				this.files.clear();
 			}
 
 			compilation.hooks.buildModule.tap(NAME, (module: any) => {
@@ -86,12 +89,12 @@ export class I18nPlugin implements I18nAdapterContext {
 					if (source !== output) {
 						await this.writeSource(module.resource, output);
 					}
-					this._files.set(module.resource, {
+					this.files.set(module.resource, {
 						meta,
 						pairs: pairs.map<I18nPair>(p => ({ key: prefix + p.key, value: p.value }))
 					});
 				} else {
-					this._files.set(module.resource, {
+					this.files.set(module.resource, {
 						meta,
 						pairs: entities
 							.filter(e => e.key !== undefined)

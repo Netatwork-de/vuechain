@@ -15,11 +15,14 @@ import { createPostprocessor } from "./postprocess";
 import { Pipes } from "./utility/pipes";
 import { formatSassError } from "./sass/error";
 import { createI18nProcessor } from "./i18n/processor";
+import { I18nContext } from "./i18n/context";
 
 export async function run(config: VcConfig, context: VcRunnerContext) {
 	const tsProject = gulpTs.createProject(join(config.context, "tsconfig.json"));
 	const scheduler = new Task(async () => {
 		let errorCount = 0;
+
+		const i18nContext = new I18nContext(config, context);
 
 		const input = src("./**/*", { cwd: config.rootDir, allowEmpty: true, nosort: true });
 		const initSourcemaps = sourcemaps.init();
@@ -50,7 +53,7 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 			},
 			vueDecomposer: vueDecomposer
 		});
-		const i18n = createI18nProcessor(context.watch, vueDecomposer);
+		const i18n = createI18nProcessor(i18nContext, context.watch, vueDecomposer);
 		const writeSourcemaps = sourcemaps.write();
 		const output = dest(config.outDir);
 
@@ -87,6 +90,7 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 			});
 
 		// TODO: Invoke i18n adapter.
+		console.log(i18nContext);
 
 		if (errorCount > 0) {
 			console.log(colors.redBright(`\n[${new Date().toLocaleTimeString()}] Compilation finished with ${errorCount} error(s).`));

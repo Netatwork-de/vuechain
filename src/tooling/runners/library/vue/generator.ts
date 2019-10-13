@@ -23,15 +23,17 @@ export const componentEntry = ({
 }) => `
 import { compose } from "vuechain/runtime/compose";
 ${hasTemplate ? `import { render, staticRenderFns } from "./${stem}--r.js";\n` : ""}
-${hasScript ? `import component from "./${stem}--s.js";\n` : ""}
+${hasScript ? `import script from "./${stem}--s.js";\n` : ""}
 ${Array.from(new Array(hasStyles)).map((_, i) => `import "./${stem}--s${i}.css";\n`).join("")}
 
-export default compose(
+const component = compose(
 	/* render */ ${hasTemplate ? "render" : "null"},
 	/* staticRenderFns */ ${hasTemplate ? "staticRenderFns" : "null"},
-	/* component */ ${hasScript ? "component" : "null"},
+	/* script */ ${hasScript ? "script" : "null"},
 	/* scopeId */ ${scoped ? JSON.stringify(scopeId) : null}
 );
+
+export default component;
 `;
 
 export const componentDeclaration = ({
