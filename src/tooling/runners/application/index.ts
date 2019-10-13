@@ -1,6 +1,7 @@
 import webpack = require("webpack");
 import HtmlPlugin = require("html-webpack-plugin");
 import { VueLoaderPlugin } from "vue-loader";
+import sassCompiler = require("sass");
 import { VcConfig } from "../../config";
 import { VcRunnerContext } from "..";
 
@@ -24,7 +25,18 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 				} },
 				{ test: /\.vue$/, loader: "vue-loader", options: {
 					esModule: true
-				} }
+				} },
+				{ test: /\.css$/, use: [
+					"vue-style-loader",
+					"css-loader"
+				] },
+				{ test: /\.scss$/, use: [
+					"vue-style-loader",
+					"css-loader",
+					{ loader: "sass-loader", options: {
+						implementation: sassCompiler
+					} }
+				] }
 			]
 		},
 		plugins: [

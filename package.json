@@ -52,6 +52,7 @@
 		"@types/hash-sum": "^1.0.0",
 		"@types/merge-stream": "^1.1.2",
 		"@types/node": "^10.14.21",
+		"@types/sass": "^1.16.0",
 		"@types/vinyl-fs": "^2.4.11",
 		"concurrently": "^5.0.0",
 		"rimraf": "^3.0.0"
