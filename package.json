@@ -1,6 +1,6 @@
 {
 	"name": "vuechain",
-	"version": "1.0.12",
+	"version": "1.0.13",
 	"description": "An opinionated full stack build chain for large scale vue 2 projects",
 	"publishConfig": {
 		"registry": "http://localhost:4873/"
