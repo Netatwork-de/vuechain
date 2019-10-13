@@ -21,7 +21,7 @@ export const componentEntry = ({
 	readonly scoped: boolean;
 	readonly scopeId: string;
 }) => `
-import { compose } from "vuechain/compose";
+import { compose } from "vuechain/runtime/compose";
 ${hasTemplate ? `import { render, staticRenderFns } from "./${stem}--r.js";\n` : ""}
 ${hasScript ? `import component from "./${stem}--s.js";\n` : ""}
 ${Array.from(new Array(hasStyles)).map((_, i) => `import "./${stem}--s${i}.css";\n`).join("")}
