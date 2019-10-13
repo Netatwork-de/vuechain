@@ -70,3 +70,5 @@ export async function postprocess(this: Transform, chunk: Vinyl, decomposer: Vue
 
 	this.push(chunk);
 }
+
+// TODO: Split this file into specific postprocessors for vue and sass.

@@ -10,11 +10,14 @@ export interface I18nPair {
 }
 
 export interface I18nFile {
+	/** File meta information. */
 	readonly meta: I18nFileMeta;
+	/** The i18n pairs that were extracted from the file. */
 	readonly pairs: I18nPair[];
 }
 
 export interface I18nAdapterContext {
+	/** A map of source filenames to i18n related file information. */
 	readonly files: ReadonlyMap<string, I18nFile>;
 
 	getPackageConfig(context: string): Promise<VcConfig | undefined>;

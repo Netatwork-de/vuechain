@@ -14,6 +14,7 @@ import { formatVueError } from "./vue/error";
 import { createPostprocessor } from "./postprocess";
 import { Pipes } from "./utility/pipes";
 import { formatSassError } from "./sass/error";
+import { createI18nProcessor } from "./i18n/processor";
 
 export async function run(config: VcConfig, context: VcRunnerContext) {
 	const tsProject = gulpTs.createProject(join(config.context, "tsconfig.json"));
@@ -49,11 +50,13 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 			},
 			vueDecomposer: vueDecomposer
 		});
+		const i18n = createI18nProcessor(context.watch, vueDecomposer);
 		const writeSourcemaps = sourcemaps.write();
 		const output = dest(config.outDir);
 
 		await new Pipes()
-			.pipe(input, initSourcemaps)
+			.pipe(input, i18n.preprocessor)
+			.pipe(i18n.preprocessor, initSourcemaps)
 			.split(initSourcemaps, [
 				(p, i) => p.route(i, [
 					{ map: /\.ts$/, to: ts },
@@ -73,7 +76,8 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 			])
 			.pipe(ts, postprocessor)
 			.pipe(scss, postprocessor)
-			.pipe(postprocessor, writeSourcemaps)
+			.pipe(postprocessor, i18n.postprocessor)
+			.pipe(i18n.postprocessor, writeSourcemaps)
 			.pipe(writeSourcemaps, output)
 			.run()
 			.catch(error => {
@@ -81,6 +85,8 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 					throw error;
 				}
 			});
+
+		// TODO: Invoke i18n adapter.
 
 		if (errorCount > 0) {
 			console.log(colors.redBright(`\n[${new Date().toLocaleTimeString()}] Compilation finished with ${errorCount} error(s).`));
