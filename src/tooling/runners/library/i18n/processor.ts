@@ -70,5 +70,7 @@ async function preprocess(this: Transform, chunk: Vinyl, context: I18nContext, j
 
 async function postprocess(this: Transform, chunk: Vinyl, decomposer: VueDecomposer) {
 	// TODO: Inject code files.
+	// TODO: Use chunk.history to detect targets.
+	// - Add history support to the vue decomposer.
 	this.push(chunk);
 }
