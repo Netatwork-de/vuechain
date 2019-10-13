@@ -15,3 +15,11 @@ interface NodeRequire {
 		keys(): string[];
 	};
 }
+
+declare module "vue/types/options" {
+	interface ComponentOptions {
+		readonly i18nPrefix: string;
+	}
+}
+
+declare const i18nPrefix: string;

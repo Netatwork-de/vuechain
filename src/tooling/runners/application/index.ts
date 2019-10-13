@@ -4,6 +4,9 @@ import { VueLoaderPlugin } from "vue-loader";
 import sassCompiler = require("sass");
 import { VcConfig } from "../../config";
 import { VcRunnerContext } from "..";
+import { I18nPlugin } from "./i18n-plugin";
+
+const i18nLoader = require.resolve("./i18n-loader");
 
 export async function run(config: VcConfig, context: VcRunnerContext) {
 	const webpackConfig = {
@@ -19,13 +22,19 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 		},
 		module: {
 			rules: [
-				{ test: /\.js$/, use: [] },
-				{ test: /\.ts$/, loader: "ts-loader", options: {
-					appendTsSuffixTo: [/\.vue$/]
-				} },
-				{ test: /\.vue$/, loader: "vue-loader", options: {
-					esModule: true
-				} },
+				{ test: /\.js$/, loader: i18nLoader },
+				{ test: /\.ts$/, use: [
+					i18nLoader,
+					{ loader: "ts-loader", options: {
+						appendTsSuffixTo: [/\.vue$/]
+					} }
+				] },
+				{ test: /\.vue$/, use: [
+					i18nLoader,
+					{ loader: "vue-loader", options: {
+						esModule: true
+					} }
+				] },
 				{ test: /\.css$/, use: [
 					"vue-style-loader",
 					"css-loader"
@@ -40,6 +49,7 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 			]
 		},
 		plugins: [
+			new I18nPlugin(),
 			new VueLoaderPlugin(),
 			new HtmlPlugin({
 				template: "./src/index.html",
@@ -48,16 +58,12 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 					collapseWhitespace: context.env === "production"
 				}
 			}),
-
-			...(context.watch ? [] : [
-				new webpack.ProgressPlugin()
-			]),
+			new webpack.ProgressPlugin()
 		],
 		node: false,
 		output: {
 			path: config.outDir,
 			filename: "index.js",
-			// TODO: Make configurable:
 			publicPath: "/"
 		}
 	};
