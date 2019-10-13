@@ -54,11 +54,16 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 
 		await new Pipes()
 			.pipe(input, initSourcemaps)
-			.route(initSourcemaps, [
-				{ map: /\.ts$/, to: ts },
-				{ map: /\.scss$/, to: scss },
-				{ map: /\.vue$/, to: vueDecomposer.stream },
-				{ to: postprocessor }
+			.split(initSourcemaps, [
+				(p, i) => p.route(i, [
+					{ map: /\.ts$/, to: ts },
+					{ map: /\.scss$/, to: scss },
+					{ map: /\.vue$/, to: vueDecomposer.stream },
+					{ to: postprocessor }
+				]),
+				(p, i) => p.route(i, [
+					{ map: /\.scss$/, to: postprocessor }
+				])
 			])
 			.route(vueDecomposer.stream, [
 				{ map: /\.d.ts$/, to: postprocessor },

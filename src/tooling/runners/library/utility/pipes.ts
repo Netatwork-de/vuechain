@@ -53,6 +53,33 @@ export class Pipes {
 		return this;
 	}
 
+	public split(input: NodeJS.ReadableStream, handlers: ((pipes: Pipes, input: NodeJS.ReadableStream) => void)[]) {
+		const splitOutputs = handlers.map(handler => {
+			const output = new Readable({ objectMode: true, read() { } });
+			handler(this, output);
+			return output;
+		});
+
+		const splitInput = new Writable({
+			objectMode: true,
+			write(chunk: Vinyl, encoding, callback) {
+				for (const output of splitOutputs) {
+					output.push(chunk.clone());
+				}
+				callback();
+			},
+			final(callback) {
+				for (const output of splitOutputs) {
+					output.push(null);
+				}
+				callback();
+			}
+		});
+
+		this.pipe(input, splitInput);
+		return this;
+	}
+
 	public run() {
 		return new Promise((resolve, reject) => {
 			const errors: any[] = [];
