@@ -2,7 +2,7 @@ import { extname } from "path";
 import { parse } from "querystring";
 import { getFileMeta } from "../../i18n/file-meta";
 import { I18nPlugin } from "./i18n-plugin";
-import { I18N_PLUGIN_KEY, I18N_MODULE_META_KEY } from "./common";
+import { I18N_PLUGIN_KEY, I18N_MODULE_META_KEY, I18N_MODULE_CONFIG_KEY } from "./common";
 
 export default async function (source: string, map: any, meta: any) {
 	const callback = this.async();
@@ -30,12 +30,14 @@ export default async function (source: string, map: any, meta: any) {
 							if (query.vue === undefined) {
 								source = injectVuePrefix(source, prefix);
 								this._module[I18N_MODULE_META_KEY] = meta;
+								this._module[I18N_MODULE_CONFIG_KEY] = config;
 							}
 							break;
 
 						default:
 							source = injectScriptPrefix(source, prefix);
 							this._module[I18N_MODULE_META_KEY] = meta;
+							this._module[I18N_MODULE_CONFIG_KEY] = config;
 							break;
 					}
 				}

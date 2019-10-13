@@ -61,7 +61,7 @@ export function justifySource(source: string, entities: I18xEntity[]): I18xJusti
 export interface I18xPair {
     /** The i18x key. */
     readonly key: number;
-    /** The default value for "en" locale. */
+	/** The default english translation. */
     readonly value: string;
 }
 

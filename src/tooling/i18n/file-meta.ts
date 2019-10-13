@@ -1,4 +1,4 @@
-import { I18nPackageConfig } from "./package-config";
+import { VcConfig } from "../config";
 
 export class I18nFileMeta {
 	public constructor(
@@ -7,7 +7,7 @@ export class I18nFileMeta {
 		readonly id: string
 	) { }
 
-	public getPrefix(config: I18nPackageConfig) {
+	public getPrefix(config: VcConfig) {
 		return config.prefix ? `${config.prefix}.${this.id}.t` : `${this.id}.t`;
 	}
 }

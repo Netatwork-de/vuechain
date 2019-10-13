@@ -57,8 +57,7 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 				minify: {
 					collapseWhitespace: context.env === "production"
 				}
-			}),
-			new webpack.ProgressPlugin()
+			})
 		],
 		node: false,
 		output: {
