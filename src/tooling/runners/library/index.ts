@@ -16,6 +16,8 @@ import { Pipes } from "./utility/pipes";
 import { formatSassError } from "./sass/error";
 import { createI18nProcessor } from "./i18n/processor";
 import { I18nContext } from "./i18n/context";
+import { writeFile } from "fs-extra";
+import { getPackageManifestFilename } from "../../i18n/package-manifest";
 
 export async function run(config: VcConfig, context: VcRunnerContext) {
 	const tsProject = gulpTs.createProject(join(config.context, "tsconfig.json"));
@@ -90,7 +92,8 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 			});
 
 		// TODO: Invoke i18n adapter.
-		console.log(i18nContext);
+
+		await writeFile(getPackageManifestFilename(config), JSON.stringify(i18nContext.generateManifest(), null, "\t"));
 
 		if (errorCount > 0) {
 			console.log(colors.redBright(`\n[${new Date().toLocaleTimeString()}] Compilation finished with ${errorCount} error(s).`));

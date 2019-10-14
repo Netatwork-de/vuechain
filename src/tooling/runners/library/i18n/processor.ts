@@ -1,6 +1,5 @@
 import Vinyl = require("vinyl");
 import { Transform } from "stream";
-import { VueDecomposer } from "../vue/decompose";
 import { getSource } from "../utility/vinyl";
 import { parseSource } from "../../../i18n/parse-source";
 import { justifySource } from "../../../i18n/justify-source";
@@ -8,6 +7,7 @@ import { writeFile } from "fs-extra";
 import { I18nContext } from "./context";
 import { getFileMeta } from "../../../i18n/file-meta";
 import { I18nPair } from "../../../i18n/adapter";
+import { join, relative } from "path";
 
 export function createI18nProcessor(context: I18nContext, justify: boolean) {
 	const preprocessor = new Transform({
@@ -77,6 +77,8 @@ async function postprocess(this: Transform, chunk: Vinyl, context: I18nContext) 
 			if (meta) {
 				const config = await context.getPackageConfig(meta.context);
 				if (config) {
+					context.setOutputSourceRelation(chunk.relative, sourceFilename);
+
 					const source = getSource(chunk);
 					const prefix = meta.getPrefix(config);
 					chunk.contents = Buffer.from(injectVuePrefix(source, prefix));
@@ -100,6 +102,11 @@ async function postprocess(this: Transform, chunk: Vinyl, context: I18nContext) 
 		if (meta) {
 			const config = await context.getPackageConfig(meta.context);
 			if (config) {
+				if (sourceFilename.startsWith(config.outDir)) {
+					sourceFilename = join(config.rootDir, relative(config.outDir, sourceFilename));
+				}
+				context.setOutputSourceRelation(chunk.relative, sourceFilename);
+
 				const source = getSource(chunk);
 				const prefix = meta.getPrefix(config);
 				chunk.contents = Buffer.from(injectScriptPrefix(source, prefix));
