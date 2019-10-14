@@ -53,7 +53,7 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 			},
 			vueDecomposer: vueDecomposer
 		});
-		const i18n = createI18nProcessor(i18nContext, context.watch, vueDecomposer);
+		const i18n = createI18nProcessor(i18nContext, context.watch);
 		const writeSourcemaps = sourcemaps.write();
 		const output = dest(config.outDir);
 

@@ -26,14 +26,13 @@ ${hasTemplate ? `import { render, staticRenderFns } from "./${stem}--r.js";\n` :
 ${hasScript ? `import script from "./${stem}--s.js";\n` : ""}
 ${Array.from(new Array(hasStyles)).map((_, i) => `import "./${stem}--s${i}.css";\n`).join("")}
 
-const component = compose(
+export default compose(
 	/* render */ ${hasTemplate ? "render" : "null"},
 	/* staticRenderFns */ ${hasTemplate ? "staticRenderFns" : "null"},
 	/* script */ ${hasScript ? "script" : "null"},
-	/* scopeId */ ${scoped ? JSON.stringify(scopeId) : null}
+	/* scopeId */ ${scoped ? JSON.stringify(scopeId) : null},
+	/* i18nPrefix */ null
 );
-
-export default component;
 `;
 
 export const componentDeclaration = ({

@@ -5,18 +5,26 @@ export function compose(
 	render: any,
 	staticRenderFns: any,
 	script: any,
-	scopeId: any
+	scopeId: string | null,
+	i18nPrefix: string | null
 ) {
 	const options = script === null
 		? { render: null }
 		: (typeof script === "function" ? script.options : script);
 
-	options.render = render || ((c: any) => c("div"));
-	options.staticRenderFns = staticRenderFns;
+	if (render !== null) {
+		options.render = render;
+		options.staticRenderFns = staticRenderFns;
+		options._compiled = true;
+	}
 
 	if (scopeId !== null) {
 		options._scopeId = scopeId;
 	}
-	options._compiled = true;
+
+	if (i18nPrefix !== null) {
+		options.i18nPrefix = i18nPrefix;
+	}
+
 	return Vue.extend(options);
 }

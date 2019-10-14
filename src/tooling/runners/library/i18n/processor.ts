@@ -9,7 +9,7 @@ import { I18nContext } from "./context";
 import { getFileMeta } from "../../../i18n/file-meta";
 import { I18nPair } from "../../../i18n/adapter";
 
-export function createI18nProcessor(context: I18nContext, justify: boolean, decomposer: VueDecomposer) {
+export function createI18nProcessor(context: I18nContext, justify: boolean) {
 	const preprocessor = new Transform({
 		objectMode: true,
 		async transform(chunk: Vinyl, encoding, callback) {
@@ -25,7 +25,7 @@ export function createI18nProcessor(context: I18nContext, justify: boolean, deco
 		objectMode: true,
 		async transform(chunk: Vinyl, encoding, callback) {
 			try {
-				await postprocess.call(this, chunk, decomposer);
+				await postprocess.call(this, chunk, context);
 				callback();
 			} catch (error) {
 				callback(error);
@@ -68,9 +68,54 @@ async function preprocess(this: Transform, chunk: Vinyl, context: I18nContext, j
 	this.push(chunk);
 }
 
-async function postprocess(this: Transform, chunk: Vinyl, decomposer: VueDecomposer) {
-	// TODO: Inject code files.
-	// TODO: Use chunk.history to detect targets.
-	// - Add history support to the vue decomposer.
+async function postprocess(this: Transform, chunk: Vinyl, context: I18nContext) {
+	// Inject prefix into vue component entries:
+	if (/\.vue\.js$/.test(chunk.path)) {
+		const sourceFilename = chunk.history.find(p => /\.vue$/.test(p));
+		if (sourceFilename) {
+			const meta = getFileMeta(sourceFilename);
+			if (meta) {
+				const config = await context.getPackageConfig(meta.context);
+				if (config) {
+					const source = getSource(chunk);
+					const prefix = meta.getPrefix(config);
+					chunk.contents = Buffer.from(injectVuePrefix(source, prefix));
+				}
+			}
+		}
+	}
+
+	// Inject prefix into .ts/js files:
+	// (gulp-typescript does not support vinyl history, so if the history has only one
+	// entry, it is either an original .js file or a transpiled .ts file)
+	if (/\.js$/.test(chunk.path) && chunk.history.length === 1) {
+		let sourceFilename = chunk.path;
+
+		const vueScriptSuffix = "--s.js";
+		if (sourceFilename.endsWith(vueScriptSuffix)) {
+			sourceFilename = sourceFilename.slice(0, -vueScriptSuffix.length) + ".js";
+		}
+
+		const meta = getFileMeta(sourceFilename);
+		if (meta) {
+			const config = await context.getPackageConfig(meta.context);
+			if (config) {
+				const source = getSource(chunk);
+				const prefix = meta.getPrefix(config);
+				chunk.contents = Buffer.from(injectScriptPrefix(source, prefix));
+			}
+		}
+	}
+
 	this.push(chunk);
+}
+
+function injectVuePrefix(source: string, prefix: string) {
+	return source.replace(`/* i18nPrefix */ null`, `/* i18nPrefix */ ${JSON.stringify(prefix)}`);
+}
+
+function injectScriptPrefix(source: string, prefix: string) {
+	// Theoretically, the prefix constant should be injected after the first import and only if no import is called "i18nPrefix",
+	// but with webpack as the final module bundler, it also works if the prefix is at the start of the file.
+	return `const i18nPrefix = ${JSON.stringify(prefix)};\n${source}`;
 }
