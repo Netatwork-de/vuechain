@@ -93,6 +93,7 @@ async function decompose(this: Transform, chunk: Vinyl, components: Map<string, 
 			throw new VueError(chunk.path, errors);
 		}
 		files.push(new Vinyl({
+			history: [...chunk.history],
 			contents: Buffer.from(templateModule({ code })),
 			cwd: chunk.cwd,
 			base: chunk.base,
@@ -108,6 +109,7 @@ async function decompose(this: Transform, chunk: Vinyl, components: Map<string, 
 			throw new VueError(chunk.path, [`Non typescript script blocks are currently unsupported in vue components. Use <script lang="ts">`]);
 		}
 		const scriptFile = new Vinyl({
+			history: [...chunk.history],
 			contents: Buffer.from(script.content),
 			cwd: chunk.cwd,
 			base: chunk.base,
@@ -124,6 +126,7 @@ async function decompose(this: Transform, chunk: Vinyl, components: Map<string, 
 	for (let i = 0; i < styles.length; i++) {
 		const style = styles[i];
 		const styleFile = new Vinyl({
+			history: [...chunk.history],
 			contents: Buffer.from(style.content),
 			cwd: chunk.cwd,
 			base: chunk.base,
@@ -138,6 +141,7 @@ async function decompose(this: Transform, chunk: Vinyl, components: Map<string, 
 	}
 
 	files.push(new Vinyl({
+		history: [...chunk.history],
 		contents: Buffer.from(componentEntry({ stem: chunk.stem, hasTemplate, hasScript, hasStyles, scoped, scopeId })),
 		cwd: chunk.cwd,
 		base: chunk.base,
@@ -146,6 +150,7 @@ async function decompose(this: Transform, chunk: Vinyl, components: Map<string, 
 		path: `${name}.vue.js`
 	}));
 	files.push(new Vinyl({
+		history: [...chunk.history],
 		contents: Buffer.from(componentDeclaration({ stem: chunk.stem, hasDeclaration })),
 		cwd: chunk.cwd,
 		base: chunk.base,

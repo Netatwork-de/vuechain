@@ -55,12 +55,14 @@ export async function postprocess(this: Transform, chunk: Vinyl, decomposer: Vue
 
 	if (/\.scss$/.test(chunk.relative)) {
 		this.push(new Vinyl({
+			history: [...chunk.history],
 			contents: Buffer.from(`import "./${chunk.stem}.css";`),
 			cwd: chunk.cwd,
 			base: chunk.base,
 			path: `${chunk.path}.js`
 		}));
 		this.push(new Vinyl({
+			history: [...chunk.history],
 			contents: Buffer.from(""),
 			cwd: chunk.cwd,
 			base: chunk.base,
