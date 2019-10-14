@@ -35,6 +35,9 @@ export interface I18nAdapterContext {
 
 	getPackageConfig(context: string): Promise<VcConfig | undefined>;
 	getPackageManifest(config: VcConfig): Promise<I18nPackageManifest | undefined>;
+
+	/** Add a translation bundle. For library builds, this is undefined. */
+	addBundle?(locale: string, messages: any): void;
 }
 
 export interface I18nAdapter {

@@ -4,7 +4,7 @@ import { I18nFileMeta } from "../../i18n/file-meta";
 import { parseSource } from "../../i18n/parse-source";
 import { VcConfig, loadConfigFromContext } from "../../config";
 import { justifySource } from "../../i18n/justify-source";
-import { I18nPair, I18nFile, I18nAdapterContext, I18nDependency } from "../../i18n/adapter";
+import { I18nPair, I18nFile, I18nAdapterContext, I18nDependency, I18nAdapter } from "../../i18n/adapter";
 import { VcRunnerContext } from "..";
 import { I18N_MODULE_META_KEY, I18N_PLUGIN_KEY, I18N_MODULE_CONFIG_KEY } from "./common";
 
@@ -13,7 +13,8 @@ const NAME = "vuechain i18n plugin";
 export class I18nPlugin implements I18nAdapterContext {
 	public constructor(
 		public readonly config: VcConfig,
-		public readonly runner: VcRunnerContext
+		public readonly runner: VcRunnerContext,
+		public readonly adapter?: I18nAdapter
 	) { }
 
 	private _packageConfigRequests = new Map<string, Promise<VcConfig | undefined>>();
@@ -56,9 +57,9 @@ export class I18nPlugin implements I18nAdapterContext {
 
 		compiler.hooks.emit.tapPromise(NAME, async (compilation: any) => {
 			if (!compilation.getStats().hasErrors()) {
-				console.log("TODO: Invoke external toolchain adapter.");
-				console.log("Files to localize:", this.files);
-				console.log("Dependencies to bundle:", this.dependencies);
+				if (this.adapter) {
+					this.adapter.process(this);
+				}
 			}
 		});
 	}
@@ -69,6 +70,10 @@ export class I18nPlugin implements I18nAdapterContext {
 			this.dependencies.set(config.context, dependency = { config, keys: new Set() });
 		}
 		return dependency;
+	}
+
+	public addBundle(locale: string, messages: any) {
+		throw new Error("Not implemented.");
 	}
 
 	public getPackageConfig(context: string): Promise<VcConfig | undefined> {

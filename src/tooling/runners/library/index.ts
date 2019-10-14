@@ -18,8 +18,11 @@ import { createI18nProcessor } from "./i18n/processor";
 import { I18nContext } from "./i18n/context";
 import { writeFile } from "fs-extra";
 import { getPackageManifestFilename } from "../../i18n/package-manifest";
+import { createI18nAdapter } from "../../i18n/adapters";
 
 export async function run(config: VcConfig, context: VcRunnerContext) {
+	const i18nAdapter = await createI18nAdapter(config);
+
 	const tsProject = gulpTs.createProject(join(config.context, "tsconfig.json"));
 	const scheduler = new Task(async () => {
 		let errorCount = 0;
@@ -91,7 +94,9 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 				}
 			});
 
-		// TODO: Invoke i18n adapter.
+		if (i18nAdapter) {
+			await i18nAdapter.process(i18nContext);
+		}
 
 		await writeFile(getPackageManifestFilename(config), JSON.stringify(i18nContext.generateManifest(), null, "\t"));
 

@@ -10,6 +10,7 @@ export interface VcConfig {
 	readonly outDir: string;
 
 	readonly prefix?: string;
+	readonly adapter?: string;
 }
 
 export type VcPackageType = "application" | "library";
@@ -37,6 +38,9 @@ export async function loadConfig(filename: string) {
 
 	if (config.prefix !== undefined && typeof config.prefix !== "string") {
 		throw new ConfigError(filename, `config.prefix must be undefined or a string.`);
+	}
+	if (config.adapter !== undefined && typeof config.adapter !== "string") {
+		throw new ConfigError(filename, `config.adapter must be undefined or a string.`);
 	}
 
 	return <VcConfig> config;

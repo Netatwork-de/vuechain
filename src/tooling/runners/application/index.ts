@@ -5,10 +5,12 @@ import sassCompiler = require("sass");
 import { VcConfig } from "../../config";
 import { VcRunnerContext } from "..";
 import { I18nPlugin } from "./i18n-plugin";
+import { createI18nAdapter } from "../../i18n/adapters";
 
 const i18nLoader = require.resolve("./i18n-loader");
 
 export async function run(config: VcConfig, context: VcRunnerContext) {
+	const i18nAdapter = await createI18nAdapter(config);
 	const webpackConfig = {
 		context: config.context,
 		mode: context.env === "development" ? "development" : "production",
@@ -49,7 +51,7 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 			]
 		},
 		plugins: [
-			new I18nPlugin(config, context),
+			new I18nPlugin(config, context, i18nAdapter),
 			new VueLoaderPlugin(),
 			new HtmlPlugin({
 				template: "./src/index.html",
