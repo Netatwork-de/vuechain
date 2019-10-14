@@ -17,7 +17,13 @@ export default async function (source: string, map: any, meta: any) {
 				if (config.external) {
 					const manifest = await plugin.getPackageManifest(config);
 					if (manifest) {
-						// TODO: Attach meta to module, if it is included in the manifest.
+						const keys = manifest.keys.get(this.resourcePath);
+						if (keys) {
+							const dependency = plugin.getDependency(config);
+							for (const key of keys) {
+								dependency.keys.add(key);
+							}
+						}
 					}
 				} else {
 					this.addDependency(config.filename);

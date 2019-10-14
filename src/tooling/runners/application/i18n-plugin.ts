@@ -4,7 +4,7 @@ import { I18nFileMeta } from "../../i18n/file-meta";
 import { parseSource } from "../../i18n/parse-source";
 import { VcConfig, loadConfigFromContext } from "../../config";
 import { justifySource } from "../../i18n/justify-source";
-import { I18nPair, I18nFile, I18nAdapterContext } from "../../i18n/adapter";
+import { I18nPair, I18nFile, I18nAdapterContext, I18nDependency } from "../../i18n/adapter";
 import { VcRunnerContext } from "..";
 import { I18N_MODULE_META_KEY, I18N_PLUGIN_KEY, I18N_MODULE_CONFIG_KEY } from "./common";
 
@@ -22,6 +22,7 @@ export class I18nPlugin implements I18nAdapterContext {
 	private _processingModules = new Map<string, Promise<void>>();
 
 	public readonly files = new Map<string, I18nFile>();
+	public readonly dependencies = new Map<string, I18nDependency>();
 
 	/** @internal */
 	public apply(compiler: any) {
@@ -55,9 +56,19 @@ export class I18nPlugin implements I18nAdapterContext {
 
 		compiler.hooks.emit.tapPromise(NAME, async (compilation: any) => {
 			if (!compilation.getStats().hasErrors()) {
-				console.log("TODO: Invoke external toolchain adapter.", this.files);
+				console.log("TODO: Invoke external toolchain adapter.");
+				console.log("Files to localize:", this.files);
+				console.log("Dependencies to bundle:", this.dependencies);
 			}
 		});
+	}
+
+	public getDependency(config: VcConfig) {
+		let dependency = this.dependencies.get(config.context);
+		if (!dependency) {
+			this.dependencies.set(config.context, dependency = { config, keys: new Set() });
+		}
+		return dependency;
 	}
 
 	public getPackageConfig(context: string): Promise<VcConfig | undefined> {

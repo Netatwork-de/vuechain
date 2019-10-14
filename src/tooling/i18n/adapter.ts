@@ -17,12 +17,21 @@ export interface I18nFile {
 	readonly pairs: I18nPair[];
 }
 
+export interface I18nDependency {
+	/** The config that was used during the build of the dependency. */
+	readonly config: VcConfig;
+	/** A set of full i18n keys that are required in the final bundle. */
+	readonly keys: Set<string>;
+}
+
 export interface I18nAdapterContext {
 	readonly config: VcConfig;
 	readonly runner: VcRunnerContext;
 
 	/** A map of source filenames to i18n related file information. */
 	readonly files: ReadonlyMap<string, I18nFile>;
+	/** A map of directory names to i18n dependencies. For library builds, this is undefined. */
+	readonly dependencies?: ReadonlyMap<string, I18nDependency>;
 
 	getPackageConfig(context: string): Promise<VcConfig | undefined>;
 	getPackageManifest(config: VcConfig): Promise<I18nPackageManifest | undefined>;
