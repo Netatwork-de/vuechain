@@ -8,11 +8,16 @@ export interface I18nPackageManifest {
 	 * i18n keys that are required to be available by the file.
 	 */
 	readonly keys: ReadonlyMap<string, string[]>;
+	/**
+	 * A set of locale ids that are supported by the package.
+	 */
+	readonly locales: Set<string>;
 }
 
 export interface I18nPackageManifestJson {
 	version: 1;
 	keys: I18nPackageManifestJsonKey[];
+	locales: string[];
 }
 
 export interface I18nPackageManifestJsonKey {
@@ -38,7 +43,8 @@ export async function getPackageManifest(config: VcConfig): Promise<I18nPackageM
 					resolve(config.outDir, entry.filename),
 					entry.keys
 				];
-			}))
+			})),
+			locales: new Set(json.locales)
 		};
 	}
 }

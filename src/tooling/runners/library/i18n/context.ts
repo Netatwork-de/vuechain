@@ -1,8 +1,8 @@
-import { posix } from "path";
 import { I18nAdapterContext, I18nFile } from "../../../i18n/adapter";
 import { VcConfig, loadConfigFromContext } from "../../../config";
 import { I18nPackageManifest, getPackageManifest, I18nPackageManifestJson, I18nPackageManifestJsonKey } from "../../../i18n/package-manifest";
 import { VcRunnerContext } from "../..";
+import { I18nMessages, parseMessagePath, mergeMessages } from "../../../i18n/messages";
 
 export class I18nContext implements I18nAdapterContext {
 	public constructor(
@@ -10,10 +10,11 @@ export class I18nContext implements I18nAdapterContext {
 		public readonly runner: VcRunnerContext
 	) { }
 
-	private _packageConfigRequests = new Map<string, Promise<VcConfig | undefined>>();
-	private _packageManifestRequests = new Map<string, Promise<I18nPackageManifest | undefined>>();
-	private _sourceOutputRelations = new Map<string, string>();
+	private readonly _packageConfigRequests = new Map<string, Promise<VcConfig | undefined>>();
+	private readonly _packageManifestRequests = new Map<string, Promise<I18nPackageManifest | undefined>>();
+	private readonly _sourceOutputRelations = new Map<string, string>();
 
+	public readonly locales = new Map<string, I18nMessages>();
 	public readonly files = new Map<string, I18nFile>();
 
 	public getPackageConfig(context: string): Promise<VcConfig | undefined> {
@@ -49,8 +50,6 @@ export class I18nContext implements I18nAdapterContext {
 
 	/** Generate a manifest from the current context. */
 	public generateManifest(): I18nPackageManifestJson {
-		// console.log(this.files);
-		// console.log(this._sourceOutputRelations);
 		const keys: I18nPackageManifestJsonKey[] = [];
 		for (const [filename, file] of this.files) {
 			if (file.meta.context === this.config.context && this._sourceOutputRelations.get(filename) && file.pairs.length > 0) {
@@ -60,6 +59,18 @@ export class I18nContext implements I18nAdapterContext {
 				});
 			}
 		}
-		return { version: 1, keys };
+		return {
+			version: 1,
+			keys,
+			locales: Array.from(this.locales.keys())
+		};
+	}
+
+	public bundleMessages(locale: string, messages: I18nMessages | string, path?: string) {
+		let target = this.locales.get(locale);
+		if (!target) {
+			this.locales.set(locale, target = { });
+		}
+		mergeMessages(target, parseMessagePath(path || ""), messages);
 	}
 }

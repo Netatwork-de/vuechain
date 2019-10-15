@@ -16,9 +16,10 @@ import { Pipes } from "./utility/pipes";
 import { formatSassError } from "./sass/error";
 import { createI18nProcessor } from "./i18n/processor";
 import { I18nContext } from "./i18n/context";
-import { writeFile } from "fs-extra";
+import { writeFile, ensureDir } from "fs-extra";
 import { getPackageManifestFilename } from "../../i18n/package-manifest";
 import { createI18nAdapter } from "../../i18n/adapters";
+import { getLocaleMessageAssetPath } from "../../i18n/messages";
 
 export async function run(config: VcConfig, context: VcRunnerContext) {
 	const i18nAdapter = await createI18nAdapter(config);
@@ -96,6 +97,13 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 
 		if (i18nAdapter) {
 			await i18nAdapter.process(i18nContext);
+		}
+
+		await ensureDir(join(config.outDir, "locale"));
+		for (const [locale, messages] of i18nContext.locales) {
+			await writeFile(join(config.outDir, getLocaleMessageAssetPath(locale)), context.env === "production"
+				? JSON.stringify(messages)
+				: JSON.stringify(messages, null, "\t"));
 		}
 
 		await writeFile(getPackageManifestFilename(config), JSON.stringify(i18nContext.generateManifest(), null, "\t"));

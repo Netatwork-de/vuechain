@@ -2,6 +2,7 @@ import { I18nFileMeta } from "./file-meta";
 import { VcConfig } from "../config";
 import { I18nPackageManifest } from "./package-manifest";
 import { VcRunnerContext } from "../runners";
+import { I18nMessages } from "./messages";
 
 export interface I18nPair {
 	/** The full i18n key. */
@@ -30,14 +31,11 @@ export interface I18nAdapterContext {
 
 	/** A map of source filenames to i18n related file information. */
 	readonly files: ReadonlyMap<string, I18nFile>;
-	/** A map of directory names to i18n dependencies. For library builds, this is undefined. */
-	readonly dependencies?: ReadonlyMap<string, I18nDependency>;
 
 	getPackageConfig(context: string): Promise<VcConfig | undefined>;
 	getPackageManifest(config: VcConfig): Promise<I18nPackageManifest | undefined>;
 
-	/** Add a translation bundle. For library builds, this is undefined. */
-	addBundle?(locale: string, messages: any): void;
+	bundleMessages(locale: string, messages: I18nMessages | string, path?: string): void;
 }
 
 export interface I18nAdapter {
