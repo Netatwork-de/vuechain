@@ -17,7 +17,9 @@ interface NodeRequire {
 }
 
 declare module "vue/types/options" {
-	interface ComponentOptions {
+	import Vue from "vue";
+
+	interface ComponentOptions<V extends Vue> {
 		readonly i18nPrefix: string;
 	}
 }
