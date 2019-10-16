@@ -34,7 +34,11 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 				{ test: /\.vue$/, use: [
 					i18nLoader,
 					{ loader: "vue-loader", options: {
-						esModule: true
+						esModule: true,
+						productionMode: context.env === "production",
+						compilerOptions: {
+							whitespace: "condense"
+						}
 					} }
 				] },
 				{ test: /\.css$/, use: [

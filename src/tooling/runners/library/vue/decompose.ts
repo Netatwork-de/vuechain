@@ -82,7 +82,10 @@ async function decompose(this: Transform, chunk: Vinyl, components: Map<string, 
 			source: template.content,
 			filename: chunk.path,
 			compiler,
-			compilerOptions: { outputSourceRange: true },
+			compilerOptions: <any> {
+				outputSourceRange: true,
+				whitespace: "condense"
+			},
 			transformAssetUrls: true,
 			isProduction: true,
 			isFunctional: false,
