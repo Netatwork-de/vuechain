@@ -74,6 +74,7 @@
 			"./test/dist/test/*.js"
 		]
 	},
+	"repository": "github:Netatwork-de/vuechain",
 	"author": "Net at Work GmbH",
 	"license": "Apache-2.0"
 }
