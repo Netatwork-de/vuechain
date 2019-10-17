@@ -24,6 +24,7 @@ export class ConfigError extends TypeError {
 }
 
 export async function loadConfig(filename: string) {
+	filename = resolve(filename);
 	const config = await readJson(filename);
 	const context = config.context = dirname(filename);
 	config.filename = filename;

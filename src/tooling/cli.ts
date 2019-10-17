@@ -11,7 +11,11 @@ import { ConfigError } from "./config";
 	switch (command) {
 		case "start":
 		case "build":
-			await (await import("./commands/run")).run(command, argv);
+			await (await import("./commands/build")).run(command, argv);
+			break;
+
+		case "clean":
+			await (await import("./commands/clean")).run(command, argv);
 			break;
 
 		default:
