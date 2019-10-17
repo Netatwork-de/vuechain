@@ -1,7 +1,7 @@
 {
 	"name": "vuechain",
 	"version": "1.0.17",
-	"description": "An opinionated full stack build chain for large scale vue 2 projects",
+	"description": "Full stack build chain for large scale vue projects with typescript and sass and i18n support",
 	"publishConfig": {
 		"registry": "http://localhost:4873/"
 	},
