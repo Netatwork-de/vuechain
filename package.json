@@ -1,7 +1,7 @@
 {
 	"name": "vuechain",
 	"version": "1.0.17",
-	"description": "Full stack build chain for large scale vue projects with typescript and sass and i18n support",
+	"description": "Full stack build chain for large scale vue projects with typescript, sass and i18n support",
 	"main": "./runtime/index.js",
 	"bin": "./tooling/index.js",
 	"types": "./runtime/index.d.ts",
