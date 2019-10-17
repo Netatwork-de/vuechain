@@ -14,9 +14,9 @@
 		"compile:watch": "concurrently npm:compile:runtime:watch npm:compile:tooling:watch",
 		"clean": "rimraf ./runtime/**/* ./tooling/**/*",
 		"prepack": "npm run clean && npm run compile",
-		"test:e2e:compile": "tsc -p tsconfig-test-e2e.json",
-		"test:e2e": "rimraf ./test/e2e/dist && npm run test:e2e:compile && node test/e2e/dist",
-		"test": "npm run test:e2e"
+		"test:e2e": "rimraf ./test/e2e/dist && tsc -p tsconfig-test-e2e.json && node test/e2e/dist",
+		"test:run": "rimraf ./test/dist && tsc -p tsconfig-test.json && ava --verbose",
+		"test": "npm run test:run && npm run test:e2e"
 	},
 	"dependencies": {
 		"@phylum/command": "^1.2.0",
@@ -68,6 +68,11 @@
 		"puppeteer": "^1.20.0",
 		"rimraf": "^3.0.0",
 		"verdaccio": "^4.3.3"
+	},
+	"ava": {
+		"files": [
+			"./test/dist/*.js"
+		]
 	},
 	"author": "Net at Work GmbH",
 	"license": "Apache-2.0"
