@@ -1,11 +1,9 @@
 #!/usr/bin/env node
 import "v8-compile-cache";
 
-import { CommandSpec, CommandError } from "@phylum/command";
+import { CommandError } from "@phylum/command";
 import { inspect } from "util";
-import { ConfigError, loadConfig } from "./config";
-import { resolve } from "path";
-import { run, VcRunnerEnv, VC_RUNNER_ENV_ARG } from "./runners";
+import { ConfigError } from "./config";
 
 ;(async () => {
 	const argv = process.argv.slice(2);
@@ -13,16 +11,7 @@ import { run, VcRunnerEnv, VC_RUNNER_ENV_ARG } from "./runners";
 	switch (command) {
 		case "start":
 		case "build":
-			const args = new CommandSpec([
-				{ name: "config", alias: "c", defaultValue: "vuechain.json" },
-				{ name: "env", alias: "e", type: VC_RUNNER_ENV_ARG }
-			]).parse(argv);
-			const config = await loadConfig(resolve(args.config));
-			const env: VcRunnerEnv = args.env || (command === "start" ? "development" : "production");
-			await run(config, {
-				watch: command === "start",
-				env
-			});
+			await (await import("./commands/run")).run(command, argv);
 			break;
 
 		default:
