@@ -3,10 +3,11 @@
 	"compilerOptions": {
 		"target": "es2018",
 		"module": "commonjs",
-		"rootDir": "./test",
+		"rootDir": "./",
 		"outDir": "./test/dist"
 	},
 	"include": [
+		"./src/tooling/**/*",
 		"./test/**/*"
 	],
 	"exclude": [

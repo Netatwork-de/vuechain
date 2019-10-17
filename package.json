@@ -71,7 +71,7 @@
 	},
 	"ava": {
 		"files": [
-			"./test/dist/*.js"
+			"./test/dist/test/*.js"
 		]
 	},
 	"author": "Net at Work GmbH",
