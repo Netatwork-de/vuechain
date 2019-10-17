@@ -3,13 +3,13 @@
 	"compilerOptions": {
 		"target": "es2018",
 		"module": "commonjs",
-		"rootDir": "./test",
-		"outDir": "./test/dist"
+		"rootDir": "./test/e2e",
+		"outDir": "./test/e2e/dist"
 	},
 	"include": [
-		"./test/**/*"
+		"./test/e2e/**/*"
 	],
 	"exclude": [
-		"./test/dist"
+		"./test/e2e/dist"
 	]
 }

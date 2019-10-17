@@ -3,7 +3,7 @@ import { spawn } from "child_process";
 import { emptyDir, readJson, writeFile, readFile, createWriteStream } from "fs-extra";
 import globCallback = require("glob");
 
-export const context = join(__dirname, "../..");
+export const context = join(__dirname, "../../..");
 
 export async function workspace(name: string) {
 	const dirname = join(__dirname, `workspace/${name}-${process.pid}`);

@@ -1,4 +1,4 @@
 /node_modules
 /tooling
 /runtime
-/test/dist
+/test/e2e/dist
