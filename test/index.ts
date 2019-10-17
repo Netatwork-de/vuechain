@@ -14,7 +14,7 @@ import { copy, readdir } from "fs-extra";
 			await copy(join(context, name), join(packageDir, name));
 		}
 		await changeJson(join(packageDir, "package.json"), data => {
-			data.publishConfig.registry = registry.address;
+			(data.publishConfig || (data.publishConfig = { })).registry = registry.address;
 			delete data.scripts.prepack;
 		});
 		await exec("npm", ["publish"], {
@@ -22,7 +22,15 @@ import { copy, readdir } from "fs-extra";
 			output: createLogStream(packageDir, "publish")
 		});
 
-		await exec("ava", ["--tap", ...await glob(join(__dirname, "tests"), "*.js")], {
+		await exec("ava", [
+			"--tap",
+
+			// Concurrency is limited to 1 as concurrent installations of packages
+			// from the uplink registry can cause trouble with verdaccio.
+			"--concurrency", "1",
+
+			...await glob(join(__dirname, "tests"), "*.js")
+		], {
 			env: { VUECHAIN_TEST_REGISTRY: registry.address }
 		});
 	} finally {

@@ -9,7 +9,7 @@ const API_PREFIX = "/__vuechain_test__/";
 
 export async function runApp({
 	cwd,
-	timeout = 60 * 1000
+	timeout = 30 * 1000
 }: {
 	cwd: string;
 	timeout?: number;
@@ -37,7 +37,7 @@ export async function runApp({
 			server.listen(0, () => resolve());
 		});
 		const address = <AddressInfo> server.address();
-		const browser = await puppeteer.launch({ headless: false });
+		const browser = await puppeteer.launch({ headless: true });
 		try {
 			const page = await browser.newPage();
 			await page.goto(`http://localhost:${address.port}/`);
