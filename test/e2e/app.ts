@@ -37,7 +37,7 @@ export async function runApp({
 			server.listen(0, () => resolve());
 		});
 		const address = <AddressInfo> server.address();
-		const browser = await puppeteer.launch({ headless: true });
+		const browser = await puppeteer.launch({ headless: true, args: ["--no-sandbox"] });
 		try {
 			const page = await browser.newPage();
 			await page.goto(`http://localhost:${address.port}/`);
