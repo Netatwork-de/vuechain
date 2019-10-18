@@ -1,3 +1,14 @@
 language: node_js
 node_js:
   - "lts/*"
+
+cache:
+  npm: false
+
+deploy:
+  provider: npm
+  email: "$NPM_EMAIL"
+  api_key: "$NPM_TOKEN"
+  skip_cleanup: true
+  on:
+    branch: release
