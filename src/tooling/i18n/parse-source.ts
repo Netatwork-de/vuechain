@@ -67,7 +67,6 @@ export function parseSource(source: string) {
                         });
                     }
                 }
-                // TODO: Support complex directives.
             }
         }
     }
