@@ -67,7 +67,8 @@
 		"glob": "^7.1.4",
 		"puppeteer": "^1.20.0",
 		"rimraf": "^3.0.0",
-		"verdaccio": "^4.3.3"
+		"verdaccio": "^4.3.3",
+		"verdaccio-memory": "^8.1.2"
 	},
 	"ava": {
 		"files": [

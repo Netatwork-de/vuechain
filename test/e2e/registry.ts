@@ -11,7 +11,7 @@ export async function createRegistry() {
 	const data = await workspace("registry");
 	return new Promise<Registry>((resolve, reject) => {
 		verdaccio({
-			storage: join(data, "storage"),
+			store: { memory: { limit: 1024 } },
 			plugins: join(data, "plugins"),
 			web: { enable: true },
 			uplinks: { npmjs: { url: "https://registry.npmjs.org/" } },
