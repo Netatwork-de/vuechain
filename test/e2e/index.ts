@@ -1,5 +1,5 @@
 import { createRegistry } from "./registry";
-import { exec, workspace, context, changeJson, glob, createLogStream } from "./utility";
+import { exec, workspace, context, changeJson, glob } from "./utility";
 import { join } from "path";
 import { copy, readdir } from "fs-extra";
 
@@ -17,10 +17,7 @@ import { copy, readdir } from "fs-extra";
 			(data.publishConfig || (data.publishConfig = { })).registry = registry.address;
 			delete data.scripts.prepack;
 		});
-		await exec("npm", ["publish"], {
-			cwd: packageDir,
-			output: createLogStream(packageDir, "publish")
-		});
+		await exec("npm", ["publish"], { cwd: packageDir, silent: true });
 
 		await exec("ava", [
 			"--tap",

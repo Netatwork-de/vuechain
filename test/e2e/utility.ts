@@ -11,35 +11,38 @@ export async function workspace(name: string) {
 	return dirname;
 }
 
-export function createLogStream(workspace: string, name: string) {
-	return createWriteStream(join(workspace, `log-${name}.txt`), { autoClose: true, encoding: "utf8" });
-}
-
 export function exec(command: string, argv: string[], {
 	cwd = context,
 	env = { },
-	output
+	silent
 }: {
 	cwd?: string;
 	env?: NodeJS.ProcessEnv;
-	output?: NodeJS.WritableStream;
+	silent?: boolean;
 } = { }) {
 	console.log(`${cwd}> ${command} ${argv.join(" ")}`);
 	return new Promise((resolve, reject) => {
 		const proc = spawn(command, argv, {
 			cwd,
-			stdio: output ? ["ignore", "pipe", "pipe"] : "inherit",
+			stdio: silent ? ["ignore", "pipe", "pipe"] : "inherit",
 			shell: true,
 			env: Object.assign(Object.create(process.env), env)
 		});
-		if (output) {
-			output.write(`\n${cwd}> ${command} ${argv.join(" ")}\n\n`);
-			proc.stdout.pipe(output);
-			proc.stderr.pipe(output);
+		let output = "";
+		if (silent) {
+			proc.stdout.on("data", chunk => {
+				output += chunk.toString("utf8");
+			});
+			proc.stderr.on("data", chunk => {
+				output += chunk.toString("utf8");
+			});
 		}
 		proc.on("error", reject);
 		proc.on("exit", (code, signal) => {
 			if (code || signal) {
+				if (silent) {
+					console.error(output);
+				}
 				reject(new Error(`${command} exited wrongly: ${code || signal}`));
 			} else {
 				resolve();

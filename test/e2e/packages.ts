@@ -1,6 +1,6 @@
 import { ensureDir, writeFile } from "fs-extra";
 import { dirname, join } from "path";
-import { exec, stringify, createLogStream } from "./utility";
+import { exec, stringify } from "./utility";
 
 const REGISTRY = <string> process.env.VUECHAIN_TEST_REGISTRY;
 const REGISTRY_ARGV = ["--registry", REGISTRY];
@@ -44,22 +44,13 @@ export async function createPackage({
 	}
 
 	if (dependencies.length > 0) {
-		await exec("npm", ["install", ...REGISTRY_ARGV, ...dependencies], {
-			cwd,
-			output: createLogStream(cwd, "dependencies")
-		});
+		await exec("npm", ["install", ...REGISTRY_ARGV, ...dependencies], { cwd, silent: true });
 	}
-	await exec("npm", ["install", ...REGISTRY_ARGV, "--save-dev", "vuechain", ...devDependencies], {
-		cwd,
-		output: createLogStream(cwd, "dev-dependencies")
-	});
+	await exec("npm", ["install", ...REGISTRY_ARGV, "--save-dev", "vuechain", ...devDependencies], { cwd, silent: true });
 
 	if (publish) {
 		// Registry is set via package publish config.
-		await exec("npm", ["publish"], {
-			cwd,
-			output: createLogStream(cwd, "publish")
-		});
+		await exec("npm", ["publish"], { cwd, silent: true });
 	}
 }
 

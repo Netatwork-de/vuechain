@@ -1,5 +1,5 @@
 import test from "ava";
-import { workspace, stringify, createLogStream, exec } from "../utility";
+import { workspace, stringify, exec } from "../utility";
 import { createPackage, testPackageName, TSCONFIG_LIB, NPMIGNORE, DEFAULT_HTML } from "../packages";
 import { join } from "path";
 import { runApp, sendEnd, sendData } from "../app";
@@ -94,10 +94,7 @@ test("supports-vue", async t => {
 		publish: false
 	});
 
-	await exec("npm", ["run", "build"], {
-		cwd: app,
-		output: createLogStream(app, "build")
-	});
+	await exec("npm", ["run", "build"], { cwd: app, silent: true });
 
 	const chunks = await runApp({ cwd: app });
 	t.deepEqual(chunks, [
