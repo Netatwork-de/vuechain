@@ -1,6 +1,6 @@
 {
 	"name": "vuechain",
-	"version": "1.0.0-beta.0",
+	"version": "1.0.0-beta.1",
 	"description": "Full stack build chain for large scale vue projects with typescript, sass and i18n support",
 	"main": "./runtime/index.js",
 	"types": "./runtime/index.d.ts",
@@ -32,6 +32,7 @@
 		"html-webpack-plugin": "^3.2.0",
 		"merge-stream": "^2.0.0",
 		"parse5": "^5.1.0",
+		"read": "^1.0.7",
 		"sass": "^1.23.0",
 		"sass-loader": "^8.0.0",
 		"ts-loader": "^6.2.0",
@@ -58,6 +59,7 @@
 		"@types/node": "^10.14.21",
 		"@types/parse5": "^5.0.2",
 		"@types/puppeteer": "^1.20.2",
+		"@types/read": "0.0.28",
 		"@types/sass": "^1.16.0",
 		"@types/vinyl-fs": "^2.4.11",
 		"ava": "^2.4.0",
