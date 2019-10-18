@@ -17,3 +17,4 @@ npm publish
 + [Configuration](./docs/config.md)
 + [Bootstrapper](./docs/bootstrapper.md)
 + [Localization](./docs/i18n.md)
++ [Troubleshooting](./docs/troubleshooting.md)
