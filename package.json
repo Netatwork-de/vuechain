@@ -16,6 +16,7 @@
 		"prepack": "npm run clean && npm run compile",
 		"test:e2e": "rimraf ./test/e2e/dist && tsc -p tsconfig-test-e2e.json && node test/e2e/dist",
 		"test:run": "rimraf ./test/dist && tsc -p tsconfig-test.json && ava --verbose",
+		"test:watch": "rimraf ./test/dist && tsc -p tsconfig-test.json && concurrently \"tsc -p tsconfig-test.json -w\" \"ava --verbose --watch\"",
 		"test": "npm run test:run"
 	},
 	"dependencies": {

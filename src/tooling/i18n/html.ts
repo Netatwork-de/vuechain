@@ -46,5 +46,9 @@ export function getTextContent(node: any) {
 			}
 		}
 	}
-	return content;
+	return content
+		// Remove leading and trailing whitespace if it contains a new line:
+		.replace(/(^\s*\n\s*)|(\s*\n\s*$)/g, "")
+		// Collapse reimaining whitespace to single spaces:
+		.replace(/\s\s+/g, " ");
 }
