@@ -1,5 +1,6 @@
 import { readJson } from "fs-extra";
 import { dirname, resolve, join } from "path";
+import { ArgumentSpec, CommandError, formatUsage } from "@phylum/command";
 
 export interface VcConfig {
 	readonly filename: string;
@@ -16,6 +17,14 @@ export interface VcConfig {
 export type VcPackageType = "application" | "library";
 export const VC_PACKAGE_TYPES = new Set<VcPackageType>(["application", "library"]);
 export const VC_PACKAGE_TYPES_STR = Array.from(VC_PACKAGE_TYPES).map(t => `"${t}"`).join(", ");
+export const VC_PACKAGE_TYPE_ARG = Object.assign((value: string, spec: ArgumentSpec) => {
+	if (!VC_PACKAGE_TYPES.has(<any> value)) {
+		throw new CommandError(`Usage: ${formatUsage(spec)}`);
+	}
+	return value as VcPackageType;
+}, {
+	displayName: VC_PACKAGE_TYPES_STR
+});
 
 export class ConfigError extends TypeError {
 	constructor(public readonly filename: string, message: string) {

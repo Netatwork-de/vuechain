@@ -18,6 +18,10 @@ import { ConfigError } from "./config";
 			await (await import("./commands/clean")).run(command, argv);
 			break;
 
+		case "init":
+			await (await import("./commands/init")).run(command, argv);
+			break;
+
 		default:
 			process.exitCode = 1;
 			console.error(`Unknown command: "${command}"`);
