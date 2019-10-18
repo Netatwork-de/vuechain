@@ -16,13 +16,14 @@ export async function createRegistry() {
 			web: { enable: true },
 			uplinks: {
 				npmjs: {
-					url: "https://registry.npmjs.org/",
-					timeout: 1000 * 90
+					url: "https://registry.npmjs.org/"
 				}
 			},
 			packages: {
-				"@*/*": { access: "$all", publish: "$anonymous", unpublish: "$anonymous", proxy: "npmjs" },
-				"**": { access: "$all", publish: "$anonymous", unpublish: "$anonymous", proxy: "npmjs" }
+				"vuechain": { access: "$all", publish: "$anonymous" },
+				"@vuechain-test/*": { access: "$all", publish: "$anonymous" },
+				"@*/*": { access: "$all", publish: "$anonymous", proxy: "npmjs" },
+				"**": { access: "$all", publish: "$anonymous", proxy: "npmjs" }
 			},
 			server: { keepAliveTimeout: 180 },
 			logs: [{ type: "stdout", format: "pretty", level: "warn" }]
