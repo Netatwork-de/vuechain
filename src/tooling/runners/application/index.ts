@@ -6,12 +6,13 @@ import { VcConfig } from "../../config";
 import { VcRunnerContext } from "..";
 import { I18nPlugin } from "./i18n-plugin";
 import { createI18nAdapter } from "../../i18n/adapters";
+import CssExtractPlugin = require("mini-css-extract-plugin");
 
 const i18nLoader = require.resolve("./i18n-loader");
 
 export async function run(config: VcConfig, context: VcRunnerContext) {
 	const i18nAdapter = await createI18nAdapter(config);
-	const webpackConfig = {
+	const webpackConfig: webpack.Configuration = {
 		context: config.context,
 		mode: context.env === "development" ? "development" : "production",
 		devtool: context.env === "production" ? false : "inline-source-map",
@@ -42,11 +43,11 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 					} }
 				] },
 				{ test: /\.css$/, use: [
-					"vue-style-loader",
+					context.env === "production" ? CssExtractPlugin.loader : "vue-style-loader",
 					"css-loader"
 				] },
 				{ test: /\.scss$/, use: [
-					"vue-style-loader",
+					context.env === "production" ? CssExtractPlugin.loader : "vue-style-loader",
 					"css-loader",
 					{ loader: "sass-loader", options: {
 						implementation: sassCompiler
@@ -63,12 +64,17 @@ export async function run(config: VcConfig, context: VcRunnerContext) {
 				minify: {
 					collapseWhitespace: context.env === "production"
 				}
-			})
+			}),
+			...(context.env === "production" ? [
+				new CssExtractPlugin({
+					filename: "bundle.[hash].css"
+				})
+			] : [])
 		],
 		node: false,
 		output: {
 			path: config.outDir,
-			filename: "index.js",
+			filename: "bundle.[hash].js",
 			publicPath: "/"
 		}
 	};
