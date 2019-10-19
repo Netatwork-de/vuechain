@@ -2,7 +2,7 @@ import { VC_RUNNER_ENV_ARG } from "./runners";
 import { VC_PACKAGE_TYPE_ARG } from "./config";
 import { ArgumentSpec, CommandError, formatUsage } from "@phylum/command";
 
-export const CONFIG = { name: "config", alias: "c", defaultValue: "vuechain.json" };
+export const CONTEXT = { name: "context", alias: "c", defaultValue: "." };
 export const RUNNER_ENV = { name: "env", alias: "e", type: VC_RUNNER_ENV_ARG };
 
 export const PACKAGE_NAME_ARG = Object.assign((value: string, spec: ArgumentSpec) => {

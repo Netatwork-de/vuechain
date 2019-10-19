@@ -1,5 +1,5 @@
 import { I18nAdapterContext, I18nFile } from "../../../i18n/adapter";
-import { VcConfig, loadConfigFromContext } from "../../../config";
+import { VcConfig, tryLoadConfig } from "../../../config";
 import { I18nPackageManifest, getPackageManifest, I18nPackageManifestJson, I18nPackageManifestJsonKey } from "../../../i18n/package-manifest";
 import { VcRunnerContext } from "../..";
 import { I18nMessages, parseMessagePath, mergeMessages } from "../../../i18n/messages";
@@ -20,7 +20,7 @@ export class I18nContext implements I18nAdapterContext {
 	public getPackageConfig(context: string): Promise<VcConfig | undefined> {
 		let request = this._packageConfigRequests.get(context);
 		if (!request) {
-			this._packageConfigRequests.set(context, request = loadConfigFromContext(context));
+			this._packageConfigRequests.set(context, request = tryLoadConfig(context));
 		}
 		return request;
 	}
