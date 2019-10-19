@@ -15,6 +15,7 @@ npm run build
 
 ## Documentation
 + [Configuration](./docs/config.md)
++ [Cli](./docs/cli.md)
 + [Bootstrapper](./docs/bootstrapper.md)
 + [Localization](./docs/i18n.md)
 + [Troubleshooting](./docs/troubleshooting.md)
