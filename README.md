@@ -9,12 +9,13 @@ npx vuechain init my-package
 # Develop:
 npm start
 
-# Publish:
-npm publish
+# Build:
+npm run build
 ```
 
 ## Documentation
 + [Configuration](./docs/config.md)
++ [Cli](./docs/cli.md)
 + [Bootstrapper](./docs/bootstrapper.md)
 + [Localization](./docs/i18n.md)
 + [Troubleshooting](./docs/troubleshooting.md)

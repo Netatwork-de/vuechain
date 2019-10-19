@@ -28,7 +28,7 @@ import { ConfigError } from "./config";
 
 		case "help":
 		case undefined:
-			console.log("// TODO: Somehow point to the readme.");
+			await (await import("./commands/help")).run(command, argv);
 			break;
 	}
 })().catch(error => {

@@ -2,7 +2,7 @@ import { readFile, writeFile, readJson } from "fs-extra";
 import { I18nPackageManifest, getPackageManifest } from "../../i18n/package-manifest";
 import { I18nFileMeta } from "../../i18n/file-meta";
 import { parseSource } from "../../i18n/parse-source";
-import { VcConfig, loadConfigFromContext } from "../../config";
+import { VcConfig, tryLoadConfig } from "../../config";
 import { justifySource } from "../../i18n/justify-source";
 import { I18nPair, I18nFile, I18nAdapterContext, I18nDependency, I18nAdapter } from "../../i18n/adapter";
 import { VcRunnerContext } from "..";
@@ -112,7 +112,7 @@ export class I18nPlugin implements I18nAdapterContext {
 	public getPackageConfig(context: string): Promise<VcConfig | undefined> {
 		let request = this._packageConfigRequests.get(context);
 		if (!request) {
-			this._packageConfigRequests.set(context, request = loadConfigFromContext(context));
+			this._packageConfigRequests.set(context, request = tryLoadConfig(context));
 		}
 		return request;
 	}

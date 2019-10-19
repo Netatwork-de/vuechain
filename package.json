@@ -1,6 +1,6 @@
 {
 	"name": "vuechain",
-	"version": "1.0.0-beta.3",
+	"version": "1.0.0-beta.4",
 	"description": "Full stack build chain for large scale vue projects with typescript, sass and i18n support",
 	"main": "./runtime/index.js",
 	"types": "./runtime/index.d.ts",
@@ -82,6 +82,7 @@
 		]
 	},
 	"repository": "github:Netatwork-de/vuechain",
+	"homepage": "https://github.com/Netatwork-de/vuechain",
 	"author": "Net at Work GmbH",
 	"license": "Apache-2.0"
 }

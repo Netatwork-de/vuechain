@@ -32,10 +32,11 @@ export class ConfigError extends TypeError {
 	}
 }
 
-export async function loadConfig(filename: string) {
-	filename = resolve(filename);
+export async function loadConfig(context: string) {
+	context = resolve(context)
+	const filename = join(context, "vuechain.json");
 	const config = await readJson(filename);
-	const context = config.context = dirname(filename);
+	config.context = context;
 	config.filename = filename;
 	config.external = /[\\\/]node_modules[\\\/]/.test(context);
 
@@ -56,8 +57,8 @@ export async function loadConfig(filename: string) {
 	return <VcConfig> config;
 }
 
-export function loadConfigFromContext(context: string) {
-	return loadConfig(join(context, "vuechain.json")).catch(error => {
+export function tryLoadConfig(context: string) {
+	return loadConfig(context).catch(error => {
 		if (error && error.code === "ENOENT") {
 			return undefined;
 		}
