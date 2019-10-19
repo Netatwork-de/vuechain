@@ -82,6 +82,7 @@
 		]
 	},
 	"repository": "github:Netatwork-de/vuechain",
+	"homepage": "https://github.com/Netatwork-de/vuechain",
 	"author": "Net at Work GmbH",
 	"license": "Apache-2.0"
 }

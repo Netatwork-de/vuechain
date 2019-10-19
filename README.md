@@ -9,8 +9,8 @@ npx vuechain init my-package
 # Develop:
 npm start
 
-# Publish:
-npm publish
+# Build:
+npm run build
 ```
 
 ## Documentation
