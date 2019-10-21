@@ -38,6 +38,7 @@ export class I18nPlugin implements I18nAdapterContext {
 				this._packageManifestRequests.clear();
 				this._sourceRequests.clear();
 				this._processingModules.clear();
+				this._locales.clear();
 
 				this.files.clear();
 			}
