@@ -1,6 +1,6 @@
 {
 	"name": "vuechain",
-	"version": "1.0.0-beta.4",
+	"version": "1.0.0-beta.5",
 	"description": "Full stack build chain for large scale vue projects with typescript, sass and i18n support",
 	"main": "./runtime/index.js",
 	"types": "./runtime/index.d.ts",
